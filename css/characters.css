@@ -1,0 +1,1152 @@
+/* —— CSS-bokser poppetjes —— */
+
+.boxer {
+  position: relative;
+  display: inline-block;
+  filter: drop-shadow(0 4px 6px rgba(0, 0, 0, 0.45));
+}
+
+.boxer--left {
+  transform: scaleX(-1);
+}
+
+.boxer__figure {
+  position: relative;
+  width: 72px;
+  height: 96px;
+  margin: 0 auto;
+}
+
+.boxer--large .boxer__figure {
+  width: 88px;
+  height: 118px;
+}
+
+.boxer--mini .boxer__figure {
+  width: 40px;
+  height: 52px;
+}
+
+.boxer__shadow {
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  width: 55%;
+  height: 8px;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 50%;
+  z-index: 0;
+}
+
+.boxer--mini .boxer__shadow {
+  height: 4px;
+  bottom: -2px;
+}
+
+/* Hoofd */
+.boxer__head {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 38px;
+  height: 38px;
+  background: linear-gradient(180deg, #ffddb8 0%, #f5c49a 100%);
+  border-radius: 50%;
+  border: 3px solid rgba(0, 0, 0, 0.15);
+  z-index: 5;
+  overflow: visible;
+}
+
+.boxer--mini .boxer__head {
+  width: 22px;
+  height: 22px;
+  border-width: 2px;
+}
+
+.boxer--large .boxer__head {
+  width: 44px;
+  height: 44px;
+}
+
+.boxer__face {
+  position: absolute;
+  inset: 0;
+}
+
+.boxer__eye {
+  position: absolute;
+  top: 38%;
+  width: 6px;
+  height: 8px;
+  background: #1a1a2e;
+  border-radius: 50%;
+}
+
+.boxer--mini .boxer__eye {
+  width: 3px;
+  height: 4px;
+  top: 40%;
+}
+
+.boxer__eye--l {
+  left: 24%;
+}
+
+.boxer__eye--r {
+  right: 24%;
+}
+
+.boxer__mouth {
+  position: absolute;
+  bottom: 22%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 6px;
+  border-bottom: 3px solid #1a1a2e;
+  border-radius: 0 0 12px 12px;
+}
+
+.boxer--mini .boxer__mouth {
+  width: 7px;
+  height: 3px;
+  border-width: 2px;
+}
+
+.boxer__cheek {
+  position: absolute;
+  top: 48%;
+  width: 7px;
+  height: 5px;
+  background: #ff9aab;
+  border-radius: 50%;
+  opacity: 0.65;
+}
+
+.boxer--mini .boxer__cheek {
+  display: none;
+}
+
+.boxer__cheek--l {
+  left: 8%;
+}
+
+.boxer__cheek--r {
+  right: 8%;
+}
+
+/* Torso & kleding */
+.boxer__torso {
+  position: absolute;
+  top: 32px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 44px;
+  height: 36px;
+  background: #4a9eff;
+  border-radius: 14px 14px 8px 8px;
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  z-index: 3;
+  overflow: visible;
+}
+
+.boxer__shirt-icon {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.05rem;
+  line-height: 1;
+  pointer-events: none;
+  z-index: 2;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.35));
+}
+
+.boxer--mini .boxer__shirt-icon {
+  font-size: 0.58rem;
+}
+
+.boxer--large .boxer__shirt-icon {
+  font-size: 1.2rem;
+}
+
+.unlock-avatar .boxer--mini .boxer__shirt-icon {
+  font-size: 0.5rem;
+}
+
+.boxer--mini .boxer__torso {
+  top: 18px;
+  width: 24px;
+  height: 20px;
+  border-width: 2px;
+  border-radius: 8px 8px 4px 4px;
+}
+
+.boxer--large .boxer__torso {
+  top: 38px;
+  width: 52px;
+  height: 42px;
+}
+
+.boxer__shorts {
+  position: absolute;
+  top: 62px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 46px;
+  height: 22px;
+  background: #2244aa;
+  border-radius: 4px 4px 10px 10px;
+  border: 3px solid rgba(0, 0, 0, 0.12);
+  z-index: 4;
+}
+
+.boxer--mini .boxer__shorts {
+  top: 34px;
+  width: 26px;
+  height: 12px;
+  border-width: 2px;
+}
+
+.boxer--large .boxer__shorts {
+  top: 74px;
+  width: 54px;
+  height: 26px;
+}
+
+/* Armen & handschoenen */
+.boxer__arm {
+  position: absolute;
+  z-index: 6;
+  transform-origin: top center;
+}
+
+.boxer__arm--back {
+  top: 36px;
+  left: 4px;
+  width: 14px;
+  height: 28px;
+  background: #ffddb8;
+  border-radius: 8px;
+  transform: rotate(25deg);
+}
+
+.boxer__arm--punch {
+  top: 34px;
+  right: 2px;
+  width: 16px;
+  height: 32px;
+  background: #ffddb8;
+  border-radius: 8px;
+  transform: rotate(-15deg);
+}
+
+.boxer--mini .boxer__arm--back {
+  top: 20px;
+  left: 2px;
+  width: 8px;
+  height: 14px;
+}
+
+.boxer--mini .boxer__arm--punch {
+  top: 18px;
+  right: 0;
+  width: 9px;
+  height: 16px;
+}
+
+.boxer__glove {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 22px;
+  height: 20px;
+  background: linear-gradient(180deg, #ff4d7a, #cc2255);
+  border-radius: 50% 50% 45% 45%;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.15);
+}
+
+.boxer--mini .boxer__glove {
+  width: 12px;
+  height: 11px;
+  bottom: -5px;
+}
+
+/* Benen */
+.boxer__leg {
+  position: absolute;
+  top: 78px;
+  width: 12px;
+  height: 18px;
+  background: #ffddb8;
+  border-radius: 0 0 6px 6px;
+  z-index: 2;
+}
+
+.boxer__leg--l {
+  left: 22px;
+}
+
+.boxer__leg--r {
+  right: 22px;
+}
+
+.boxer--mini .boxer__leg {
+  top: 42px;
+  width: 7px;
+  height: 10px;
+}
+
+.boxer--mini .boxer__leg--l {
+  left: 12px;
+}
+
+.boxer--mini .boxer__leg--r {
+  right: 12px;
+}
+
+.boxer__foot {
+  position: absolute;
+  bottom: 0;
+  width: 16px;
+  height: 8px;
+  background: #fff;
+  border: 2px solid #333;
+  border-radius: 4px 4px 6px 6px;
+  z-index: 1;
+}
+
+.boxer__foot--l {
+  left: 20px;
+}
+
+.boxer__foot--r {
+  right: 20px;
+}
+
+.boxer--mini .boxer__foot {
+  width: 9px;
+  height: 5px;
+}
+
+.boxer--mini .boxer__foot--l {
+  left: 11px;
+}
+
+.boxer--mini .boxer__foot--r {
+  right: 11px;
+}
+
+/* Mystery / vergrendeld */
+.boxer--mystery .boxer__head,
+.boxer--mystery .boxer__torso--silhouette,
+.boxer--mystery .boxer__shorts--silhouette {
+  background: #3d3560;
+  border: 2px dashed rgba(255, 230, 0, 0.5);
+}
+
+.boxer__mystery-mark {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.4rem;
+  color: var(--neon-yellow);
+}
+
+.boxer--mini .boxer__mystery-mark {
+  font-size: 0.85rem;
+}
+
+/* —— Speler skins —— */
+.boxer--beginner .boxer__torso {
+  background: linear-gradient(180deg, #5eb3ff, #3d8ee8);
+}
+
+.boxer--beginner .boxer__shorts {
+  background: #2a4fbf;
+}
+
+.boxer--strong .boxer__torso {
+  background: linear-gradient(180deg, #6bcf7f, #3da85a);
+  width: 48px;
+}
+
+.boxer--strong .boxer__head {
+  width: 40px;
+  height: 40px;
+}
+
+.boxer--lightning .boxer__torso {
+  background: linear-gradient(180deg, #ffe566, #e6b800);
+}
+
+.boxer--lightning .boxer__shorts {
+  background: #554400;
+}
+
+.boxer--lightning .boxer__glove {
+  background: linear-gradient(180deg, #fff566, #ccb800);
+}
+
+.boxer--fire .boxer__torso {
+  background: linear-gradient(180deg, #ff8844, #dd4422);
+}
+
+.boxer--fire .boxer__shorts {
+  background: #882200;
+}
+
+.boxer--fire .boxer__glove {
+  background: linear-gradient(180deg, #ff6622, #cc3300);
+}
+
+.boxer--champion .boxer__torso {
+  background: linear-gradient(180deg, #aa77ff, #7744cc);
+}
+
+.boxer--champion .boxer__shorts {
+  background: #442288;
+}
+
+.boxer--champion .boxer__glove {
+  background: linear-gradient(180deg, #ffd700, #cc9900);
+}
+
+.boxer--legend .boxer__torso {
+  background: linear-gradient(180deg, #44dd88, #228855);
+}
+
+.boxer--legend .boxer__shorts {
+  background: #115533;
+}
+
+.boxer--legend .boxer__head {
+  background: linear-gradient(180deg, #a8f0c8, #6fd49a);
+}
+
+.boxer--legend .boxer__glove {
+  background: linear-gradient(180deg, #66ff99, #22aa55);
+}
+
+/* Accessoires (relatief aan hoofd) */
+.boxer__acc {
+  position: absolute;
+  left: 50%;
+  z-index: 9;
+  pointer-events: none;
+}
+
+.boxer__acc--cap {
+  top: -18%;
+  transform: translateX(-50%);
+  width: 92%;
+  height: 36%;
+  background: #ff3355;
+  border-radius: 45% 45% 15% 15%;
+  border: 2px solid rgba(0, 0, 0, 0.15);
+}
+
+.boxer__acc--cap::after {
+  content: "";
+  position: absolute;
+  top: 72%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 108%;
+  height: 42%;
+  background: #ff3355;
+  border-radius: 15%;
+}
+
+.boxer__acc--headband {
+  top: 20%;
+  transform: translateX(-50%);
+  width: 102%;
+  height: 15%;
+  background: linear-gradient(180deg, #ff3366, #ff2255);
+  border-radius: 40% / 50%;
+  box-shadow: inset 0 -2px 0 rgba(0, 0, 0, 0.12);
+  z-index: 3;
+}
+
+/* Gezicht blijft op vaste plek; band erachter op het voorhoofd */
+.boxer--strong .boxer__face {
+  z-index: 4;
+}
+
+.boxer__acc--spikes {
+  top: -42%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 42% solid transparent;
+  border-right: 42% solid transparent;
+  border-bottom: 48% solid #ffe600;
+  filter: drop-shadow(0 0 3px #ffaa00);
+}
+
+.boxer__acc--flame {
+  top: -55%;
+  transform: translateX(-50%);
+  width: 52%;
+  height: 58%;
+  background: radial-gradient(circle at 50% 80%, #ff6600, #ffcc00 60%, transparent 70%);
+  border-radius: 50% 50% 20% 20%;
+  animation: flameFlicker 0.5s ease-in-out infinite alternate;
+}
+
+@keyframes flameFlicker {
+  from { transform: translateX(-50%) scale(1); }
+  to { transform: translateX(-50%) scale(1.08); }
+}
+
+.boxer__acc--crown {
+  top: -42%;
+  transform: translateX(-50%);
+  width: 88%;
+  height: 44%;
+  background: linear-gradient(180deg, #ffe600, #cc9900);
+  clip-path: polygon(0% 100%, 20% 30%, 40% 100%, 50% 20%, 60% 100%, 80% 30%, 100% 100%);
+}
+
+/* Kampioen: rode cape */
+.boxer__cape {
+  position: absolute;
+  top: 30px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 54px;
+  height: 50px;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.boxer__cape::before,
+.boxer__cape::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    #ff4d5e 0%,
+    #e8223a 45%,
+    #b80e24 100%
+  );
+  border: 2px solid rgba(120, 0, 20, 0.35);
+  box-shadow: inset 0 2px 0 rgba(255, 120, 130, 0.35);
+}
+
+.boxer__cape::before {
+  left: 0;
+  border-radius: 10px 0 0 55%;
+  transform: skewX(-10deg);
+  transform-origin: top right;
+}
+
+.boxer__cape::after {
+  right: 0;
+  border-radius: 0 10px 55% 0;
+  transform: skewX(10deg);
+  transform-origin: top left;
+}
+
+.boxer--mini .boxer__cape {
+  top: 17px;
+  width: 30px;
+  height: 28px;
+}
+
+.boxer--large .boxer__cape {
+  top: 36px;
+  width: 62px;
+  height: 58px;
+}
+
+.unlock-avatar .boxer--mini .boxer__cape {
+  top: 16px;
+  width: 28px;
+  height: 26px;
+}
+
+.boxer__acc--horns {
+  top: 8%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 42%;
+}
+
+.boxer__acc--horns::before,
+.boxer__acc--horns::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 28%;
+  height: 100%;
+  background: #88ddaa;
+  border-radius: 50% 50% 0 0;
+  border: 2px solid #448866;
+}
+
+.boxer__acc--horns::before {
+  left: 8%;
+  transform: rotate(-25deg);
+}
+
+.boxer__acc--horns::after {
+  right: 8%;
+  transform: rotate(25deg);
+}
+
+/* —— Tegenstanders —— */
+.boxer--robot .boxer__head {
+  background: linear-gradient(180deg, #b8c8d8, #8899aa);
+  border-radius: 12px;
+}
+
+.boxer--robot .boxer__torso {
+  background: linear-gradient(180deg, #99aabb, #667788);
+}
+
+.boxer--robot .boxer__eye {
+  background: #00ffcc;
+  box-shadow: 0 0 6px #00ffcc;
+  border-radius: 2px;
+  width: 8px;
+  height: 4px;
+}
+
+.boxer__acc--antenna {
+  top: -55%;
+  transform: translateX(-50%);
+  width: 12%;
+  height: 38%;
+  background: #888;
+}
+
+.boxer__acc--antenna::after {
+  content: "";
+  position: absolute;
+  top: -55%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 28%;
+  height: 28%;
+  aspect-ratio: 1;
+  background: #ff2255;
+  border-radius: 50%;
+  animation: antennaBlink 1s step-end infinite;
+}
+
+@keyframes antennaBlink {
+  50% { opacity: 0.3; }
+}
+
+.boxer--balloon .boxer__head {
+  width: 42px;
+  height: 42px;
+  background: radial-gradient(circle at 35% 30%, #ff99cc, #ff4499);
+}
+
+.boxer--balloon .boxer__torso {
+  width: 50px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 35%, #99ddff, #4499ff);
+}
+
+.boxer--skibidi .boxer__head {
+  background: #f0f0f0;
+  border-radius: 8px 8px 12px 12px;
+  height: 42px;
+}
+
+.boxer__acc--toilet {
+  top: -18%;
+  transform: translateX(-50%);
+  width: 82%;
+  height: 22%;
+  background: #ddd;
+  border-radius: 20% 20% 0 0;
+  border: 2px solid #999;
+}
+
+.boxer--cool .boxer__acc--shades {
+  top: 34%;
+  transform: translateX(-50%);
+  width: 88%;
+  height: 28%;
+  background: #111;
+  border-radius: 20%;
+}
+
+.boxer--cool .boxer__acc--shades::before,
+.boxer--cool .boxer__acc--shades::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 38%;
+  height: 100%;
+  background: #223;
+  border-radius: 15%;
+}
+
+.boxer--cool .boxer__acc--shades::before {
+  left: 4%;
+}
+
+.boxer--cool .boxer__acc--shades::after {
+  right: 4%;
+}
+
+.boxer--sigma .boxer__head {
+  background: linear-gradient(180deg, #999, #666);
+  border-radius: 8px;
+}
+
+.boxer--sigma .boxer__torso {
+  background: linear-gradient(180deg, #888, #555);
+}
+
+.boxer--sigma .boxer__mouth {
+  display: none;
+}
+
+.boxer__acc--stone-brow {
+  top: 30%;
+  transform: translateX(-50%);
+  width: 76%;
+  height: 18%;
+  background: #444;
+  border-radius: 20%;
+}
+
+.boxer--corn .boxer__head {
+  background: linear-gradient(180deg, #ffe566, #ddaa22);
+  border-radius: 40% 40% 50% 50%;
+}
+
+.boxer--corn .boxer__torso {
+  background: linear-gradient(180deg, #ffee88, #ddbb33);
+}
+
+.boxer__acc--corn-leaves {
+  top: -38%;
+  transform: translateX(-50%);
+  width: 100%;
+  height: 38%;
+  background: #44aa44;
+  clip-path: polygon(50% 100%, 0% 0%, 25% 40%, 50% 10%, 75% 40%, 100% 0%);
+}
+
+/* Mini-bokser: zelfde verhoudingen als grote versie */
+.boxer--mini.boxer--strong .boxer__head {
+  width: 24px;
+  height: 24px;
+}
+
+.boxer--mini.boxer--strong .boxer__torso {
+  width: 26px;
+}
+
+.boxer--mini.boxer--balloon .boxer__head {
+  width: 24px;
+  height: 24px;
+}
+
+.boxer--mini.boxer--balloon .boxer__torso {
+  width: 28px;
+  height: 22px;
+}
+
+.boxer--mini.boxer--skibidi .boxer__head {
+  height: 24px;
+  border-radius: 5px 5px 7px 7px;
+}
+
+.boxer--mini.boxer--robot .boxer__eye {
+  width: 4px;
+  height: 2px;
+}
+
+.boxer--mini .boxer__acc--flame {
+  animation: none;
+}
+
+/* Animaties gevecht */
+.fighter.punch-right .boxer__arm--punch {
+  animation: armPunchRight 0.35s ease;
+}
+
+.fighter.punch-left .boxer__arm--punch {
+  animation: armPunchLeft 0.35s ease;
+}
+
+/* Gespiegelde tegenstander: animatie omkeren zodat de vuist naar de speler gaat */
+.fighter.punch-left .boxer--left .boxer__arm--punch {
+  animation: armPunchRight 0.35s ease;
+}
+
+.fighter.hit .boxer__figure {
+  animation: boxerHitShake 0.5s ease;
+}
+
+@keyframes armPunchRight {
+  0% { transform: rotate(-15deg); }
+  45% { transform: rotate(-75deg) translate(8px, -4px); }
+  100% { transform: rotate(-15deg); }
+}
+
+@keyframes armPunchLeft {
+  0% { transform: rotate(-15deg); }
+  45% { transform: rotate(45deg) translate(-8px, -4px); }
+  100% { transform: rotate(-15deg); }
+}
+
+@keyframes boxerHitShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-6px) rotate(-4deg); }
+  50% { transform: translateX(6px) rotate(4deg); }
+  75% { transform: translateX(-4px); }
+}
+
+.preview-fighter .boxer {
+  animation: bob 1.2s ease-in-out infinite;
+}
+
+.unlock-avatar .boxer {
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.35));
+}
+
+.unlock-avatar .boxer--mini .boxer__figure {
+  width: 36px;
+  height: 48px;
+}
+
+.unlock-avatar .boxer--mini .boxer__head {
+  width: 20px;
+  height: 20px;
+}
+
+.unlock-avatar .boxer--mini .boxer__torso {
+  top: 17px;
+  width: 22px;
+  height: 18px;
+}
+
+.unlock-avatar .boxer--mini .boxer__shorts {
+  top: 31px;
+  width: 24px;
+  height: 11px;
+}
+
+.unlock-avatar .boxer--mini .boxer__arm--back {
+  top: 19px;
+  left: 1px;
+  width: 7px;
+  height: 12px;
+}
+
+.unlock-avatar .boxer--mini .boxer__arm--punch {
+  top: 17px;
+  width: 8px;
+  height: 14px;
+}
+
+.unlock-avatar .boxer--mini .boxer__leg {
+  top: 39px;
+  width: 6px;
+  height: 9px;
+}
+
+.unlock-avatar .boxer--mini .boxer__leg--l {
+  left: 11px;
+}
+
+.unlock-avatar .boxer--mini .boxer__leg--r {
+  right: 11px;
+}
+
+.unlock-avatar .boxer--mini .boxer__foot {
+  width: 8px;
+  height: 4px;
+}
+
+.unlock-avatar .boxer--mini .boxer__foot--l {
+  left: 10px;
+}
+
+.unlock-avatar .boxer--mini .boxer__foot--r {
+  right: 10px;
+}
+
+.unlock-avatar .boxer--mini .boxer__glove {
+  width: 10px;
+  height: 9px;
+  bottom: -4px;
+}
+
+.unlock-avatar .boxer--mini.boxer--strong .boxer__head,
+.unlock-avatar .boxer--mini.boxer--balloon .boxer__head {
+  width: 21px;
+  height: 21px;
+}
+
+.unlock-avatar .boxer--mini.boxer--strong .boxer__torso {
+  width: 24px;
+}
+
+.unlock-avatar .boxer--mini.boxer--balloon .boxer__torso {
+  width: 25px;
+  height: 20px;
+}
+
+.unlock-node.locked .unlock-avatar .boxer:not(.boxer--mystery) {
+  opacity: 0.35;
+  filter: grayscale(1);
+}
+
+/* —— Karakter-specifieke aanvallen (projectielen) —— */
+.attack-projectile {
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 25;
+  pointer-events: none;
+  will-change: transform;
+}
+
+.attack-projectile--impact {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+
+/* Beginneling: vliegende handschoen */
+.attack-glove {
+  width: 34px;
+  height: 32px;
+  background: linear-gradient(165deg, #ff6b8a 0%, #cc2255 100%);
+  border-radius: 50% 50% 42% 42%;
+  border: 2px solid rgba(0, 0, 0, 0.25);
+  box-shadow:
+    0 4px 10px rgba(255, 45, 100, 0.55),
+    inset 0 -4px 0 rgba(0, 0, 0, 0.15);
+  transform: rotate(-25deg);
+}
+
+.attack-glove--power {
+  width: 44px;
+  height: 40px;
+  box-shadow:
+    0 0 16px rgba(57, 255, 20, 0.5),
+    0 4px 12px rgba(255, 45, 100, 0.6);
+}
+
+/* Bliksem: bliksemschicht (90° gedraaid → punten naar tegenstander) */
+.attack-lightning {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  filter: drop-shadow(0 0 6px #00f5ff) drop-shadow(0 0 14px #ffe600);
+}
+
+.attack-projectile--to-right .attack-lightning {
+  transform: rotate(90deg);
+  animation: lightningSpinRight 0.4s ease-in-out;
+}
+
+.attack-projectile--to-left .attack-lightning {
+  transform: rotate(-90deg);
+  animation: lightningSpinLeft 0.4s ease-in-out;
+}
+
+.attack-lightning__bolt {
+  font-size: 2.2rem;
+  line-height: 0.85;
+  color: #ffe600;
+  text-shadow:
+    0 0 8px #00f5ff,
+    0 0 16px #fff;
+}
+
+.attack-lightning__bolt--2 {
+  font-size: 1.5rem;
+  margin-top: -0.35rem;
+  margin-left: 0.6rem;
+  opacity: 0.9;
+}
+
+@keyframes lightningSpinRight {
+  0%, 100% { transform: rotate(85deg) scale(1); }
+  50% { transform: rotate(95deg) scale(1.08); }
+}
+
+@keyframes lightningSpinLeft {
+  0%, 100% { transform: rotate(-85deg) scale(1); }
+  50% { transform: rotate(-95deg) scale(1.08); }
+}
+
+/* Vuur */
+.attack-fire {
+  width: 36px;
+  height: 36px;
+  position: relative;
+}
+
+.attack-fire__core {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 80%, #ff4400, #ffcc00 55%, transparent 70%);
+  border-radius: 50% 50% 30% 30%;
+  animation: fireFlicker 0.25s ease-in-out infinite alternate;
+}
+
+@keyframes fireFlicker {
+  from { transform: scale(1) rotate(-5deg); }
+  to { transform: scale(1.12) rotate(5deg); }
+}
+
+/* Kampioen */
+.attack-crown {
+  font-size: 2rem;
+  filter: drop-shadow(0 0 8px #ffd700) drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4));
+  animation: crownSpin 0.4s ease;
+}
+
+@keyframes crownSpin {
+  to { transform: rotate(360deg); }
+}
+
+/* Legende */
+.attack-dragon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.attack-dragon__orb {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle at 35% 35%, #a8ffcc, #22aa55 50%, #115533);
+  border-radius: 50%;
+  box-shadow: 0 0 14px #44ff88;
+  animation: dragonPulse 0.35s ease-in-out infinite alternate;
+}
+
+@keyframes dragonPulse {
+  to { transform: scale(1.15); }
+}
+
+/* Tegenstander-projectielen */
+.attack-zap {
+  width: 28px;
+  height: 28px;
+  background: radial-gradient(circle, #66ffff, #0088cc);
+  border-radius: 50%;
+  box-shadow: 0 0 12px #00f5ff;
+}
+
+.attack-bubble {
+  width: 32px;
+  height: 32px;
+  background: radial-gradient(circle at 30% 30%, #ffccff, #ff4499);
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  opacity: 0.9;
+}
+
+.attack-splash {
+  font-size: 1.8rem;
+  filter: drop-shadow(0 0 6px #4499ff);
+}
+
+.attack-beam {
+  width: 48px;
+  height: 8px;
+  background: linear-gradient(90deg, transparent, #ffe600, #fff);
+  border-radius: 4px;
+  box-shadow: 0 0 10px #ffe600;
+}
+
+.attack-rock {
+  width: 30px;
+  height: 30px;
+  background: linear-gradient(145deg, #aaa, #555);
+  border-radius: 6px;
+  transform: rotate(15deg);
+}
+
+.attack-corn {
+  font-size: 1.75rem;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+/* Impact-flash bij treffer */
+.attack-impact {
+  position: absolute;
+  width: 48px;
+  height: 48px;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 24;
+  animation: impactBurst 0.35s ease-out forwards;
+}
+
+.attack-impact--glove,
+.attack-impact--power {
+  background: radial-gradient(circle, rgba(255, 80, 120, 0.7), transparent 70%);
+}
+
+.attack-impact--lightning {
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.8), rgba(255, 230, 0, 0.4) 40%, transparent 70%);
+  box-shadow: 0 0 20px #00f5ff;
+}
+
+.attack-impact--fire {
+  background: radial-gradient(circle, rgba(255, 100, 0, 0.75), transparent 70%);
+}
+
+.attack-impact--crown {
+  background: radial-gradient(circle, rgba(255, 215, 0, 0.7), transparent 70%);
+}
+
+.attack-impact--dragon {
+  background: radial-gradient(circle, rgba(68, 255, 136, 0.7), transparent 70%);
+}
+
+.attack-impact--zap,
+.attack-impact--beam {
+  background: radial-gradient(circle, rgba(0, 245, 255, 0.65), transparent 70%);
+}
+
+.attack-impact--bubble,
+.attack-impact--splash {
+  background: radial-gradient(circle, rgba(255, 100, 180, 0.6), transparent 70%);
+}
+
+.attack-impact--rock,
+.attack-impact--corn {
+  background: radial-gradient(circle, rgba(200, 200, 200, 0.65), transparent 70%);
+}
+
+@keyframes impactBurst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.3);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1.6);
+    opacity: 0;
+  }
+}

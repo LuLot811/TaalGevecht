@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Engels Boks — Brain Rot Boxing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bangers&family=Nunito:wght@700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/characters.css">
+</head>
+<body>
+  <div class="bg-noise" aria-hidden="true"></div>
+
+  <div id="app">
+    <section id="screen-menu" class="screen active">
+      <header class="logo-block">
+        <h1 class="logo glitch" data-text="TAAL GEVECHT">Taal gevecht</h1>
+        <p class="tagline">🥊 Leer Engels. Knock-out je tegenstander! 🥊</p>
+      </header>
+
+      <div class="menu-fighter preview-fighter" id="menu-fighter"></div>
+
+      <div class="stats-card" id="menu-stats">
+        <div class="stat">
+          <span class="stat-label">Level</span>
+          <span class="stat-value" id="menu-level">1</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">XP</span>
+          <span class="stat-value" id="menu-xp">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Gewonnen</span>
+          <span class="stat-value" id="menu-wins">0</span>
+        </div>
+      </div>
+
+      <section class="unlock-section" id="unlock-section" aria-label="Bokser voortgang">
+        <h2 class="unlock-heading">Ontgrendel je boksers</h2>
+        <div class="unlock-track">
+          <div class="unlock-track-line" aria-hidden="true">
+            <div class="unlock-track-fill" id="unlock-track-fill"></div>
+          </div>
+          <div class="unlock-nodes" id="unlock-nodes" role="list"></div>
+        </div>
+        <p class="unlock-next" id="unlock-next"></p>
+      </section>
+
+      <div class="xp-bar-wrap">
+        <div class="xp-bar" id="menu-xp-bar" style="width: 0%"></div>
+      </div>
+      <p class="xp-hint" id="menu-xp-hint">Nog 50 XP tot level 2</p>
+
+      <div class="dev-panel" id="dev-panel">
+        <label for="dev-level-select" class="dev-label">🧪 Test: kies level</label>
+        <select id="dev-level-select" class="dev-level-select" aria-label="Level kiezen voor testen"></select>
+      </div>
+
+      <button type="button" class="btn btn-primary btn-pulse" id="btn-fight">
+        ⚡ START GEVECHT ⚡
+      </button>
+
+      <p class="how-to">
+        Beantwoord Engelse vragen om te slaan!<br>
+        Fout? Dan word jij geraakt! 💥
+      </p>
+    </section>
+
+    <section id="screen-battle" class="screen">
+      <div class="battle-top">
+      <div class="battle-hud">
+        <div class="hud-left">
+          <span class="hud-name">Jij — Level <span id="battle-player-level">1</span></span>
+          <div class="hp-bar hp-player">
+            <div class="hp-fill" id="player-hp-fill"></div>
+          </div>
+          <span class="hp-text" id="player-hp-text">100 / 100</span>
+        </div>
+
+        <div class="hud-center">
+          <span class="round-badge" id="round-badge">Ronde 1</span>
+        </div>
+
+        <div class="hud-right">
+          <span class="hud-name" id="enemy-name">Tegenstander</span>
+          <div class="hp-bar hp-enemy">
+            <div class="hp-fill" id="enemy-hp-fill"></div>
+          </div>
+          <span class="hp-text" id="enemy-hp-text">100 / 100</span>
+        </div>
+      </div>
+
+      <div class="arena">
+        <div class="fighter player-side" id="player-fighter">
+          <div class="fighter-sprite" id="player-sprite"></div>
+          <span class="fighter-label">Jij</span>
+        </div>
+
+        <div class="vs-burst">VS</div>
+
+        <div class="fighter enemy-side" id="enemy-fighter">
+          <div class="fighter-sprite" id="enemy-sprite"></div>
+          <span class="fighter-label" id="enemy-label">Bot</span>
+        </div>
+      </div>
+
+      <div class="battle-msg" id="battle-msg" aria-live="polite"></div>
+      </div>
+
+      <div class="question-panel" id="question-panel">
+        <div class="question-review-overlay question-review-overlay--hidden" id="question-review-overlay" aria-live="polite">
+          <button type="button" class="question-review-close" id="question-review-close" aria-label="Sluiten">✕</button>
+          <p class="question-review-title">Niet goed, zo moet het:</p>
+          <p class="question-review-question" id="question-review-question"></p>
+          <p class="question-review-answer">
+            Jouw antwoord:
+            <strong id="question-review-user-answer">—</strong>
+          </p>
+          <p class="question-review-answer question-review-answer--correct">
+            Goed antwoord:
+            <strong id="question-review-correct-answer">—</strong>
+          </p>
+          <button type="button" class="btn btn-primary question-review-ok" id="question-review-ok">OK, door</button>
+        </div>
+        <p class="question-type" id="question-type">Kies het juiste antwoord</p>
+        <div class="fill-dutch-wrap hidden" id="fill-dutch-wrap">
+          <span class="fill-dutch-label">Nederlands</span>
+          <p class="fill-dutch" id="fill-dutch"></p>
+        </div>
+        <p class="question-text" id="question-text"></p>
+
+        <div class="choices" id="choices-area"></div>
+
+        <form class="fill-form hidden" id="fill-form">
+          <label for="fill-input" class="fill-label" id="fill-label">Vul het ontbrekende woord in:</label>
+          <div class="fill-row">
+            <input type="text" id="fill-input" class="fill-input" autocomplete="off" spellcheck="false" placeholder="typ hier...">
+            <button type="submit" class="btn btn-attack">SLA! 👊</button>
+          </div>
+        </form>
+
+        <div class="scramble-panel hidden" id="scramble-panel">
+          <p class="scramble-hint">Sleep de Engelse woorden op de juiste plek (of tik: woord → vakje):</p>
+          <div class="scramble-slots" id="scramble-slots" aria-label="Engelse zin opbouwen"></div>
+          <p class="scramble-bank-label">Woorden</p>
+          <div class="scramble-bank" id="scramble-bank" aria-label="Engelse woorden"></div>
+          <button type="button" class="btn btn-attack scramble-submit" id="scramble-submit">Klaar! 👊</button>
+        </div>
+
+        <section class="battle-history" id="battle-history" aria-label="Vraaggeschiedenis">
+          <h3 class="battle-history__heading">Geschiedenis van dit gevecht</h3>
+          <p class="battle-history__empty" id="battle-history-empty">Nog geen vragen beantwoord.</p>
+          <ol class="battle-history__list" id="battle-history-list"></ol>
+        </section>
+      </div>
+
+    </section>
+
+    <section id="screen-result" class="screen">
+      <div class="result-card" id="result-card">
+        <h2 class="result-title" id="result-title">GEWONNEN!</h2>
+        <p class="result-emoji" id="result-emoji">🏆</p>
+        <p class="result-text" id="result-text"></p>
+        <p class="result-xp" id="result-xp"></p>
+        <button type="button" class="btn btn-primary" id="btn-continue">Terug naar menu</button>
+      </div>
+    </section>
+  </div>
+
+  <script src="js/questions.js"></script>
+  <script src="js/characters.js"></script>
+  <script src="js/scramble.js"></script>
+  <script src="js/game.js"></script>
+</body>
+</html>
