@@ -115,9 +115,12 @@ const ScrambleUI = (() => {
 
     els.bank.innerHTML = "";
     const used = new Set(state.slots.filter(Boolean));
-    shuffleArray(state.chips.filter((c) => !used.has(c.id))).forEach((chip) => {
-      els.bank.appendChild(createChip(chip, "bank"));
-    });
+    state.bankOrder
+      .map((chipId) => state.chips.find((chip) => chip.id === chipId))
+      .filter((chip) => chip && !used.has(chip.id))
+      .forEach((chip) => {
+        els.bank.appendChild(createChip(chip, "bank"));
+      });
 
     els.submit.disabled = locked;
   }
@@ -208,8 +211,13 @@ const ScrambleUI = (() => {
       locked = false;
       selectedChipId = null;
       onSubmit = submitCb;
+      const bankWords = Array.isArray(question.bankWords) && question.bankWords.length
+        ? question.bankWords
+        : question.words;
+      const chips = bankWords.map((word, i) => ({ id: `w${i}`, word }));
       state = {
-        chips: question.words.map((word, i) => ({ id: `w${i}`, word })),
+        chips,
+        bankOrder: shuffleArray(chips.map((chip) => chip.id)),
         slots: question.words.map(() => null),
       };
       if (els.panel) els.panel.classList.remove("scramble-panel--incomplete");

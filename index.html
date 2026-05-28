@@ -56,6 +56,9 @@
       <div class="dev-panel" id="dev-panel">
         <label for="dev-level-select" class="dev-label">🧪 Test: kies level</label>
         <select id="dev-level-select" class="dev-level-select" aria-label="Level kiezen voor testen"></select>
+        <button type="button" class="dev-reset-medals-btn" id="dev-reset-medals-btn">
+          Reset medailles
+        </button>
       </div>
 
       <button type="button" class="btn btn-primary btn-pulse" id="btn-fight">
@@ -66,6 +69,11 @@
         Beantwoord Engelse vragen om te slaan!<br>
         Fout? Dan word jij geraakt! 💥
       </p>
+
+      <section class="medals-section" id="medals-section" aria-label="Medailes">
+        <h2 class="medals-heading">Jouw medailes</h2>
+        <div class="medals-grid" id="medals-grid"></div>
+      </section>
     </section>
 
     <section id="screen-battle" class="screen">
@@ -174,6 +182,10 @@
         <p class="result-emoji" id="result-emoji">🏆</p>
         <p class="result-text" id="result-text"></p>
         <p class="result-xp" id="result-xp"></p>
+        <section class="result-medals" id="result-medals" aria-live="polite" aria-label="Vrijgespeelde medailles">
+          <h3 class="result-medals-title">Vrijgespeelde medailles</h3>
+          <div class="result-medals-list" id="result-medals-list"></div>
+        </section>
         <button type="button" class="btn btn-primary" id="btn-continue">Terug naar menu</button>
       </div>
     </section>

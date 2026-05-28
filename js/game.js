@@ -10,16 +10,64 @@ const CONFIG = {
   xpLoss: 15,
 };
 
+const MEDALS = [
+  {
+    id: "streak5",
+    icon: "🎯",
+    title: "Rake klappen",
+    description: "5 antwoorden achter elkaar goed",
+  },
+  {
+    id: "perfectBattle",
+    icon: "🧠",
+    title: "Perfect gevecht",
+    description: "Alle vragen in 1 gevecht goed",
+  },
+  {
+    id: "winStreak3",
+    icon: "🔥",
+    title: "Win streak",
+    description: "3 gevechten achter elkaar winnen",
+  },
+  {
+    id: "perfectWinStreak3",
+    icon: "👑",
+    title: "Onverslaanbaar",
+    description: "3 perfecte overwinningen achter elkaar",
+  },
+];
+
+function defaultMedalsState() {
+  return MEDALS.reduce((acc, medal) => {
+    acc[medal.id] = false;
+    return acc;
+  }, {});
+}
+
 const defaultSave = () => ({
   xp: 0,
   wins: 0,
   losses: 0,
+  answerStreak: 0,
+  winStreak: 0,
+  perfectWinStreak: 0,
+  medals: defaultMedalsState(),
 });
 
 function loadSave() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) return { ...defaultSave(), ...JSON.parse(raw) };
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      return {
+        ...defaultSave(),
+        ...parsed,
+        medals: {
+          ...defaultMedalsState(),
+          ...(parsed?.medals || {}),
+        },
+      };
+    }
   } catch (_) {
     /* ignore */
   }
@@ -44,10 +92,12 @@ const el = {
   menuXpBar: document.getElementById("menu-xp-bar"),
   menuXpHint: document.getElementById("menu-xp-hint"),
   menuFighter: document.getElementById("menu-fighter"),
+  medalsGrid: document.getElementById("medals-grid"),
   unlockTrackFill: document.getElementById("unlock-track-fill"),
   unlockNodes: document.getElementById("unlock-nodes"),
   unlockNext: document.getElementById("unlock-next"),
   devLevelSelect: document.getElementById("dev-level-select"),
+  devResetMedalsBtn: document.getElementById("dev-reset-medals-btn"),
   btnFight: document.getElementById("btn-fight"),
   battlePlayerLevel: document.getElementById("battle-player-level"),
   playerHpFill: document.getElementById("player-hp-fill"),
@@ -87,6 +137,8 @@ const el = {
   resultEmoji: document.getElementById("result-emoji"),
   resultText: document.getElementById("result-text"),
   resultXp: document.getElementById("result-xp"),
+  resultMedals: document.getElementById("result-medals"),
+  resultMedalsList: document.getElementById("result-medals-list"),
   btnContinue: document.getElementById("btn-continue"),
   arena: document.querySelector(".arena"),
 };
@@ -168,7 +220,37 @@ function refreshMenu() {
   });
   el.menuFighter.setAttribute("aria-label", `Jouw bokser: ${skin.title}`);
   refreshUnlockTrack();
+  renderMedals();
   syncDevLevelSelect();
+}
+
+function unlockMedal(id) {
+  if (!save.medals || save.medals[id]) return false;
+  save.medals[id] = true;
+  if (battle && Array.isArray(battle.newlyUnlockedMedals)) {
+    battle.newlyUnlockedMedals.push(id);
+  }
+  return true;
+}
+
+function getMedalById(id) {
+  return MEDALS.find((medal) => medal.id === id) || null;
+}
+
+function renderMedals() {
+  if (!el.medalsGrid) return;
+
+  el.medalsGrid.innerHTML = MEDALS.map((medal) => {
+    const unlocked = Boolean(save.medals?.[medal.id]);
+    return `
+      <article class="medal-card ${unlocked ? "medal-card--unlocked" : "medal-card--locked"}" aria-label="${medal.title}">
+        <span class="medal-icon" aria-hidden="true">${medal.icon}</span>
+        <h3 class="medal-title">${medal.title}</h3>
+        <p class="medal-desc">${medal.description}</p>
+        <span class="medal-status">${unlocked ? "Vrijgespeeld" : "Vergrendeld"}</span>
+      </article>
+    `;
+  }).join("");
 }
 
 function initDevLevelSelect() {
@@ -202,6 +284,16 @@ function syncDevLevelSelect() {
   el.devLevelSelect.value = String(level);
 }
 
+function resetMedalsForTesting() {
+  save.medals = defaultMedalsState();
+  save.answerStreak = 0;
+  save.winStreak = 0;
+  save.perfectWinStreak = 0;
+  writeSave(save);
+  renderResultMedalUnlocks([], false);
+  refreshMenu();
+}
+
 function startBattle() {
   const { level } = getPlayerLevelInfo();
   const skin = getFighterSkin(level);
@@ -221,6 +313,8 @@ function startBattle() {
     enemy,
     skin,
     correctStreak: 0,
+    perfectBattle: true,
+    newlyUnlockedMedals: [],
     history: [],
   };
 
@@ -261,7 +355,7 @@ function updateHpBars() {
 function showNextQuestion() {
   if (!battle || inputLocked) return;
 
-  currentQuestion = generateQuestion(battle.playerLevel);
+  currentQuestion = generateQuestion(battle.playerLevel, battle.round);
   el.questionType.textContent = currentQuestion.typeLabel;
   el.questionText.innerHTML = currentQuestion.prompt;
 
@@ -460,6 +554,10 @@ function onCorrectHit() {
   battle.enemyHp -= battle.playerDamage;
   battle.correctHits++;
   battle.correctStreak++;
+  save.answerStreak += 1;
+  if (save.answerStreak >= 5) {
+    unlockMedal("streak5");
+  }
   el.battleMsg.textContent = getRandomPhrase(HIT_PHRASES);
   el.battleMsg.className = "battle-msg right";
   triggerSuccessAnimation();
@@ -497,6 +595,8 @@ function triggerSuccessAnimation() {
 function onWrongHit(historyEntry) {
   battle.playerHp -= battle.enemyDamage;
   battle.correctStreak = 0;
+  battle.perfectBattle = false;
+  save.answerStreak = 0;
   el.battleMsg.textContent = getRandomPhrase(MISS_PHRASES);
   el.battleMsg.className = "battle-msg wrong";
 
@@ -612,13 +712,30 @@ function continueToNextQuestionImmediately() {
 
 function endBattle(won) {
   const oldLevel = getPlayerLevelInfo().level;
+  const hadPerfectBattle = Boolean(battle?.perfectBattle);
 
   if (won) {
     save.xp += CONFIG.xpWin;
     save.wins += 1;
+    save.winStreak += 1;
+    if (hadPerfectBattle) {
+      save.perfectWinStreak += 1;
+      unlockMedal("perfectBattle");
+    } else {
+      save.perfectWinStreak = 0;
+    }
+
+    if (save.winStreak >= 3) {
+      unlockMedal("winStreak3");
+    }
+    if (save.perfectWinStreak >= 3) {
+      unlockMedal("perfectWinStreak3");
+    }
   } else {
     save.xp = Math.max(0, save.xp - CONFIG.xpLoss);
     save.losses += 1;
+    save.winStreak = 0;
+    save.perfectWinStreak = 0;
   }
 
   writeSave(save);
@@ -648,11 +765,85 @@ function endBattle(won) {
     el.resultText.textContent += ` Nieuwe titel: ${skin.title}!`;
   }
 
+  const unlockedThisBattle = Array.isArray(battle?.newlyUnlockedMedals)
+    ? [...battle.newlyUnlockedMedals]
+    : [];
+  renderResultMedalUnlocks(unlockedThisBattle, won);
+
   battle = null;
   currentQuestion = null;
   hideWrongAnswerOverlay();
   refreshMenu();
   showScreen("result");
+}
+
+function renderResultMedalUnlocks(unlockedMedalIds, won) {
+  if (!el.resultMedals || !el.resultMedalsList) return;
+
+  if (!won || !unlockedMedalIds.length) {
+    el.resultMedals.classList.remove("result-medals--visible");
+    el.resultMedalsList.innerHTML = "";
+    clearResultConfetti();
+    return;
+  }
+
+  const medalEntries = unlockedMedalIds
+    .map((id) => getMedalById(id))
+    .filter(Boolean)
+    .map((medal, index) => `
+      <article class="result-medal-chip" style="animation-delay: ${(index * 0.08).toFixed(2)}s">
+        <span class="result-medal-chip__icon" aria-hidden="true">${medal.icon}</span>
+        <span class="result-medal-chip__label">${medal.title}</span>
+      </article>
+    `);
+
+  if (!medalEntries.length) {
+    el.resultMedals.classList.remove("result-medals--visible");
+    el.resultMedalsList.innerHTML = "";
+    clearResultConfetti();
+    return;
+  }
+
+  el.resultMedals.classList.add("result-medals--visible");
+  el.resultMedalsList.innerHTML = medalEntries.join("");
+  triggerResultConfetti();
+}
+
+function clearResultConfetti() {
+  if (!el.resultCard) return;
+  el.resultCard.querySelectorAll(".result-confetti").forEach((piece) => piece.remove());
+}
+
+function triggerResultConfetti() {
+  if (!el.resultCard) return;
+  clearResultConfetti();
+
+  const colors = ["#ffe600", "#ff2d95", "#00f5ff", "#39ff14", "#ff9a00"];
+  const pieces = 28;
+
+  for (let i = 0; i < pieces; i++) {
+    const piece = document.createElement("span");
+    const drift = Math.round((Math.random() - 0.5) * 180);
+    const delay = Math.random() * 0.18;
+    const duration = 0.8 + Math.random() * 0.8;
+    const rotate = Math.round((Math.random() - 0.5) * 360);
+    const size = 6 + Math.floor(Math.random() * 7);
+
+    piece.className = "result-confetti";
+    piece.style.left = `${8 + Math.random() * 84}%`;
+    piece.style.top = "-6%";
+    piece.style.width = `${size}px`;
+    piece.style.height = `${size * 0.55}px`;
+    piece.style.background = colors[Math.floor(Math.random() * colors.length)];
+    piece.style.setProperty("--confetti-drift", `${drift}px`);
+    piece.style.animationDelay = `${delay}s`;
+    piece.style.animationDuration = `${duration}s`;
+    piece.style.transform = `rotate(${rotate}deg)`;
+    el.resultCard.appendChild(piece);
+
+    const ttlMs = Math.ceil((delay + duration) * 1000 + 120);
+    setTimeout(() => piece.remove(), ttlMs);
+  }
 }
 
 const HIT_PHRASES = [
@@ -707,8 +898,19 @@ window.addEventListener("resize", () => {
 
 el.btnContinue.addEventListener("click", () => {
   el.resultCard.classList.remove("level-up-flash");
+  if (el.resultMedals) {
+    el.resultMedals.classList.remove("result-medals--visible");
+  }
+  if (el.resultMedalsList) {
+    el.resultMedalsList.innerHTML = "";
+  }
+  clearResultConfetti();
   showScreen("menu");
 });
+
+if (el.devResetMedalsBtn) {
+  el.devResetMedalsBtn.addEventListener("click", resetMedalsForTesting);
+}
 
 // Init
 initDevLevelSelect();

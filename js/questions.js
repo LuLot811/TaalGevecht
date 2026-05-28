@@ -811,7 +811,7 @@ const FILL_BLANK_MIN_LEVEL = Math.max(...FIGHTER_SKINS.map((s) => s.minLevel));
  * 6 t/m hoogste-1: ook woorden schuiven
  * hoogste level (18+): vooral invullen + schuiven
  */
-function generateQuestion(playerLevel) {
+function generateQuestion(playerLevel, round = 1) {
   if (playerLevel <= 2) {
     return buildMcEasy();
   }
@@ -823,12 +823,12 @@ function generateQuestion(playerLevel) {
     if (roll < 0.15) return buildMcEasy();
     if (roll < 0.35) return buildMcReverse();
     if (roll < 0.55) return buildMcSentence();
-    if (playerLevel >= 6) return buildScramble();
+    if (playerLevel >= 6) return buildScramble(round, playerLevel);
     return buildMcSentence();
   }
   const roll = Math.random();
   if (roll < 0.65) return buildFillBlank();
-  if (roll < 0.85) return buildScramble();
+  if (roll < 0.85) return buildScramble(round, playerLevel);
   return buildMcSentence();
 }
 
@@ -871,13 +871,31 @@ function buildMcSentence() {
   };
 }
 
-function buildScramble() {
+function getScrambleDistractors(correctWords, count) {
+  const correctSet = new Set(correctWords.map((w) => w.toLowerCase()));
+  const vocab = Array.from(
+    new Set(
+      QUESTION_POOL.scramble.flatMap((entry) => entry.words).filter((word) => {
+        return !correctSet.has(word.toLowerCase());
+      })
+    )
+  );
+  return shuffle(vocab).slice(0, count);
+}
+
+function buildScramble(round = 1, playerLevel = 1) {
   const q = pickRandom(QUESTION_POOL.scramble);
+  const correctWords = [...q.words];
+  const shouldAddDistractors = round >= 13 || playerLevel >= 13;
+  const extraWords = shouldAddDistractors ? getScrambleDistractors(correctWords, 2) : [];
+  const bankWords = shuffle([...correctWords, ...extraWords]);
+
   return {
     type: "scramble",
     typeLabel: "Zet de Engelse woorden in de juiste volgorde",
     translation: q.dutch,
-    words: [...q.words],
+    words: correctWords,
+    bankWords,
     answer: q.words.join(" "),
     prompt: "",
     hint: "",

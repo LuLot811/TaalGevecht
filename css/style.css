@@ -330,6 +330,80 @@ body {
   max-width: 300px;
 }
 
+/* Medailles */
+.medals-section {
+  width: 100%;
+  margin-top: 0.4rem;
+  padding: 0.85rem 0.75rem;
+  border: 2px solid var(--neon-cyan);
+  border-radius: 16px;
+  background: var(--card);
+  backdrop-filter: blur(4px);
+}
+
+.medals-heading {
+  font-family: var(--font-display);
+  font-size: 1.1rem;
+  color: var(--neon-yellow);
+  text-align: center;
+  margin-bottom: 0.65rem;
+  letter-spacing: 0.04em;
+}
+
+.medals-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.55rem;
+}
+
+.medal-card {
+  border: 2px dashed rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  padding: 0.5rem;
+  text-align: center;
+  background: rgba(0, 0, 0, 0.22);
+}
+
+.medal-card--locked {
+  opacity: 0.65;
+  filter: grayscale(0.85);
+}
+
+.medal-card--unlocked {
+  border-style: solid;
+  border-color: var(--neon-yellow);
+  box-shadow: 0 0 14px rgba(255, 230, 0, 0.35);
+}
+
+.medal-icon {
+  display: block;
+  font-size: 1.45rem;
+  margin-bottom: 0.2rem;
+}
+
+.medal-title {
+  font-size: 0.8rem;
+  font-weight: 900;
+  color: var(--neon-cyan);
+  margin-bottom: 0.2rem;
+}
+
+.medal-desc {
+  font-size: 0.67rem;
+  line-height: 1.25;
+  min-height: 2rem;
+}
+
+.medal-status {
+  display: inline-block;
+  margin-top: 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--neon-yellow);
+}
+
 /* Test-panel */
 .dev-panel {
   width: 100%;
@@ -366,6 +440,26 @@ body {
 
 .dev-level-select:focus {
   box-shadow: 0 0 10px rgba(0, 245, 255, 0.45);
+}
+
+.dev-reset-medals-btn {
+  margin-top: 0.1rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 900;
+  border: 2px solid var(--neon-pink);
+  border-radius: 10px;
+  background: rgba(255, 45, 149, 0.2);
+  color: var(--text);
+  padding: 0.55rem 0.75rem;
+  min-height: 44px;
+  cursor: pointer;
+  transition: transform 0.15s, background 0.15s;
+}
+
+.dev-reset-medals-btn:hover {
+  background: rgba(255, 45, 149, 0.35);
+  transform: scale(1.02);
 }
 
 /* Gevecht: HUD, arena en status — 25% groter dan basis */
@@ -1153,6 +1247,8 @@ body {
   padding: 2rem 1.5rem;
   width: 100%;
   max-width: 360px;
+  position: relative;
+  overflow: hidden;
 }
 
 .result-card.win {
@@ -1190,6 +1286,97 @@ body {
   font-size: 1.5rem;
   color: var(--neon-cyan);
   margin-bottom: 1.25rem;
+}
+
+.result-medals {
+  display: none;
+  margin: 0 0 1rem;
+  padding: 0.65rem 0.75rem;
+  border-radius: 12px;
+  border: 2px solid var(--neon-yellow);
+  background: rgba(255, 230, 0, 0.12);
+  color: var(--neon-yellow);
+  font-size: 0.9rem;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.result-medals--visible {
+  display: block;
+}
+
+.result-medals-title {
+  font-family: var(--font-display);
+  font-size: 1rem;
+  color: var(--neon-yellow);
+  margin-bottom: 0.45rem;
+  letter-spacing: 0.04em;
+}
+
+.result-medals-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  justify-content: center;
+}
+
+.result-medal-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.5rem;
+  border-radius: 999px;
+  border: 2px solid rgba(255, 230, 0, 0.55);
+  background: rgba(0, 0, 0, 0.25);
+  animation: resultMedalPop 0.26s cubic-bezier(0.2, 0.9, 0.2, 1) both;
+}
+
+.result-medal-chip__icon {
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.result-medal-chip__label {
+  font-size: 0.78rem;
+  font-weight: 900;
+  color: var(--text);
+}
+
+@keyframes resultMedalPop {
+  0% {
+    opacity: 0;
+    transform: scale(0.78);
+  }
+  65% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.result-confetti {
+  position: absolute;
+  z-index: 6;
+  border-radius: 999px;
+  pointer-events: none;
+  opacity: 0.95;
+  animation-name: resultConfettiFall;
+  animation-timing-function: ease-out;
+  animation-fill-mode: forwards;
+}
+
+@keyframes resultConfettiFall {
+  0% {
+    transform: translate(0, 0) scale(1) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--confetti-drift), 320px) scale(0.7) rotate(260deg);
+    opacity: 0;
+  }
 }
 
 /* Damage popup */
