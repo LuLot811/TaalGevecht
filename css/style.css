@@ -1008,6 +1008,21 @@ body {
   border-top: 2px dashed rgba(255, 255, 255, 0.2);
 }
 
+.battle-history-toggle {
+  display: none;
+  width: 100%;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 900;
+  border: 2px solid var(--neon-cyan);
+  border-radius: 10px;
+  background: rgba(0, 245, 255, 0.14);
+  color: var(--text);
+  padding: 0.55rem 0.8rem;
+  min-height: 44px;
+  cursor: pointer;
+}
+
 .battle-history__heading {
   font-family: var(--font-display);
   font-size: 0.95rem;
@@ -1224,5 +1239,147 @@ body {
 
   .unlock-track-line {
     top: 1.85rem;
+  }
+}
+
+@media (max-width: 768px) {
+  #app {
+    max-width: 100%;
+    padding: 0.85rem 0.75rem calc(0.85rem + env(safe-area-inset-bottom));
+  }
+
+  .screen {
+    gap: 0.85rem;
+  }
+
+  .question-panel {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .question-text {
+    font-size: 1.05rem;
+    line-height: 1.45;
+  }
+
+  .fill-dutch {
+    font-size: 1.15rem;
+  }
+
+  .choices {
+    gap: 0.5rem;
+  }
+
+  .choice-btn,
+  .btn,
+  .scramble-chip,
+  .fill-input,
+  .question-review-close {
+    min-height: 44px;
+  }
+
+  .choice-btn,
+  .scramble-chip,
+  .btn {
+    font-size: 1rem;
+  }
+
+  .fill-row {
+    gap: 0.4rem;
+  }
+
+  .fill-input {
+    font-size: 1rem;
+    padding: 0.65rem 0.8rem;
+  }
+
+  .battle-history__list {
+    max-height: 200px;
+  }
+
+  .battle-history-toggle {
+    display: block;
+    margin-top: 0.75rem;
+  }
+
+  .battle-history {
+    margin-top: 0.65rem;
+  }
+
+  .battle-history--mobile-collapsed {
+    display: none;
+  }
+
+  .question-review-overlay {
+    padding: 0.85rem;
+  }
+
+  .question-review-title {
+    font-size: 1.45rem;
+  }
+
+  .question-review-question {
+    font-size: 1rem;
+  }
+
+  .question-review-answer {
+    font-size: 0.95rem;
+  }
+
+  .vs-burst {
+    top: 26%;
+  }
+}
+
+@media (max-width: 480px) {
+  html {
+    font-size: 15px;
+  }
+
+  .battle-top {
+    gap: 0.85rem;
+  }
+
+  .battle-top .arena {
+    min-height: 170px;
+  }
+
+  .battle-top .fighter-sprite {
+    min-height: 108px;
+  }
+
+  .battle-top .arena .boxer:not(.boxer--left) {
+    transform: scale(1.12);
+  }
+
+  .battle-top .arena .boxer--left {
+    transform: scaleX(-1) scale(1.12);
+  }
+
+  .battle-top .vs-burst {
+    font-size: 2.1rem;
+  }
+
+  .battle-top .battle-msg {
+    font-size: 1.05rem;
+    min-height: 2.1rem;
+  }
+
+  .round-badge {
+    font-size: 1rem;
+    padding: 0.2rem 0.55rem;
+  }
+
+  .hud-name,
+  .fighter-label {
+    font-size: 0.8rem;
+  }
+
+  .hp-text {
+    font-size: 0.72rem;
+  }
+
+  .question-type {
+    font-size: 0.7rem;
   }
 }

@@ -62,6 +62,7 @@ const el = {
   playerFighter: document.getElementById("player-fighter"),
   enemyFighter: document.getElementById("enemy-fighter"),
   battleMsg: document.getElementById("battle-msg"),
+  battleTop: document.querySelector(".battle-top"),
   questionType: document.getElementById("question-type"),
   questionPanel: document.getElementById("question-panel"),
   questionText: document.getElementById("question-text"),
@@ -71,6 +72,8 @@ const el = {
   questionReviewUserAnswer: document.getElementById("question-review-user-answer"),
   questionReviewCorrectAnswer: document.getElementById("question-review-correct-answer"),
   questionReviewOk: document.getElementById("question-review-ok"),
+  battleHistory: document.getElementById("battle-history"),
+  battleHistoryToggle: document.getElementById("battle-history-toggle"),
   battleHistoryList: document.getElementById("battle-history-list"),
   battleHistoryEmpty: document.getElementById("battle-history-empty"),
   fillDutchWrap: document.getElementById("fill-dutch-wrap"),
@@ -92,6 +95,21 @@ let save = loadSave();
 let battle = null;
 let currentQuestion = null;
 let inputLocked = false;
+
+function isMobileViewport() {
+  return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function setBattleHistoryCollapsed(collapsed) {
+  if (!el.battleHistory || !el.battleHistoryToggle) return;
+
+  const shouldCollapse = isMobileViewport() ? collapsed : false;
+  el.battleHistory.classList.toggle("battle-history--mobile-collapsed", shouldCollapse);
+  el.battleHistoryToggle.setAttribute("aria-expanded", shouldCollapse ? "false" : "true");
+  el.battleHistoryToggle.textContent = shouldCollapse
+    ? "Toon geschiedenis"
+    : "Verberg geschiedenis";
+}
 
 function showScreen(name) {
   Object.values(screens).forEach((s) => s.classList.remove("active"));
@@ -207,6 +225,7 @@ function startBattle() {
   };
 
   clearBattleHistory();
+  setBattleHistoryCollapsed(true);
   hideWrongAnswerOverlay();
   inputLocked = false;
   el.battlePlayerLevel.textContent = level;
@@ -318,6 +337,7 @@ function lockChoices() {
 function handleAnswer(userAnswer, clickedBtn) {
   if (inputLocked || !battle || !currentQuestion) return;
   inputLocked = true;
+  focusBattleTopOnMobile();
 
   if (currentQuestion.type === "mc") {
     lockChoices();
@@ -526,6 +546,18 @@ function continueAfterWrongReview() {
   hideWrongAnswerOverlay();
 }
 
+function focusBattleTopOnMobile() {
+  if (!isMobileViewport()) return;
+  if (!screens.battle.classList.contains("active")) return;
+
+  if (document.activeElement instanceof HTMLElement) {
+    document.activeElement.blur();
+  }
+
+  const target = el.battleTop || screens.battle;
+  target.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
 function escapeHtml(value) {
   return String(value)
     .replace(/&/g, "&amp;")
@@ -659,6 +691,19 @@ if (el.questionReviewClose) {
 if (el.questionReviewOk) {
   el.questionReviewOk.addEventListener("click", continueAfterWrongReview);
 }
+
+if (el.battleHistoryToggle) {
+  el.battleHistoryToggle.addEventListener("click", () => {
+    const isCollapsed = el.battleHistory.classList.contains("battle-history--mobile-collapsed");
+    setBattleHistoryCollapsed(!isCollapsed);
+  });
+}
+
+window.addEventListener("resize", () => {
+  if (!el.battleHistory || !el.battleHistoryToggle) return;
+  const isCollapsed = el.battleHistory.classList.contains("battle-history--mobile-collapsed");
+  setBattleHistoryCollapsed(isCollapsed);
+});
 
 el.btnContinue.addEventListener("click", () => {
   el.resultCard.classList.remove("level-up-flash");
