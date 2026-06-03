@@ -89,80 +89,132 @@ const QUESTION_POOL = {
     { dutch: "oma", answer: "grandma", wrong: ["grandpa", "mother", "aunt"] },
   ],
 
-  // Level 3-4: Engels woord → kies Nederlands (omgekeerd)
+  // Engels → Nederlands; minLevel = woordniveau (1, 5, 10 of 15)
   mc_reverse: [
-    { english: "dog", answer: "hond", wrong: ["kat", "vogel", "vis"] },
-    { english: "cat", answer: "kat", wrong: ["hond", "koe", "varken"] },
-    { english: "apple", answer: "appel", wrong: ["peer", "banaan", "druif"] },
-    { english: "book", answer: "boek", wrong: ["pen", "tas", "school"] },
-    { english: "water", answer: "water", wrong: ["melk", "sap", "thee"] },
-    { english: "milk", answer: "melk", wrong: ["water", "sap", "limonade"] },
-    { english: "mother", answer: "moeder", wrong: ["vader", "oma", "opa"] },
-    { english: "father", answer: "vader", wrong: ["moeder", "broer", "zus"] },
-    { english: "school", answer: "school", wrong: ["huis", "park", "winkel"] },
-    { english: "friend", answer: "vriend", wrong: ["vijand", "buur", "leraar"] },
-    { english: "big", answer: "groot", wrong: ["klein", "lang", "kort"] },
-    { english: "small", answer: "klein", wrong: ["groot", "dik", "dun"] },
-    { english: "happy", answer: "blij", wrong: ["boos", "moe", "bang"] },
-    { english: "sad", answer: "verdrietig", wrong: ["blij", "moe", "lief"] },
-    { english: "run", answer: "rennen", wrong: ["lopen", "springen", "zitten"] },
-    { english: "eat", answer: "eten", wrong: ["drinken", "slapen", "spelen"] },
-    { english: "drink", answer: "drinken", wrong: ["eten", "koken", "wassen"] },
-    { english: "play", answer: "spelen", wrong: ["werken", "leren", "slapen"] },
-    { english: "cow", answer: "koe", wrong: ["paard", "varken", "schaap"] },
-    { english: "pig", answer: "varken", wrong: ["koe", "hond", "kat"] },
-    { english: "horse", answer: "paard", wrong: ["koe", "ezel", "geit"] },
-    { english: "duck", answer: "eend", wrong: ["kip", "gans", "vogel"] },
-    { english: "chicken", answer: "kip", wrong: ["eend", "ei", "vogel"] },
-    { english: "mouse", answer: "muis", wrong: ["rat", "kat", "hond"] },
-    { english: "rabbit", answer: "konijn", wrong: ["haas", "kat", "hond"] },
-    { english: "bear", answer: "beer", wrong: ["leeuw", "wolf", "hond"] },
-    { english: "lion", answer: "leeuw", wrong: ["tijger", "beer", "kat"] },
-    { english: "banana", answer: "banaan", wrong: ["appel", "peer", "druif"] },
-    { english: "pear", answer: "peer", wrong: ["appel", "perzik", "pruim"] },
-    { english: "bread", answer: "brood", wrong: ["taart", "rijst", "boter"] },
-    { english: "cheese", answer: "kaas", wrong: ["melk", "boter", "ei"] },
-    { english: "egg", answer: "ei", wrong: ["melk", "brood", "kaas"] },
-    { english: "juice", answer: "sap", wrong: ["melk", "water", "fris"] },
-    { english: "chair", answer: "stoel", wrong: ["tafel", "bed", "bank"] },
-    { english: "table", answer: "tafel", wrong: ["stoel", "bureau", "bed"] },
-    { english: "door", answer: "deur", wrong: ["raam", "muur", "vloer"] },
-    { english: "window", answer: "raam", wrong: ["deur", "muur", "dak"] },
-    { english: "pen", answer: "pen", wrong: ["potlood", "boek", "gum"] },
-    { english: "pencil", answer: "potlood", wrong: ["pen", "liniaal", "boek"] },
-    { english: "bag", answer: "tas", wrong: ["doos", "hoed", "jas"] },
-    { english: "hat", answer: "hoed", wrong: ["pet", "jas", "schoen"] },
-    { english: "shoe", answer: "schoen", wrong: ["sok", "hoed", "laars"] },
-    { english: "sock", answer: "sok", wrong: ["schoen", "handschoen", "hoed"] },
-    { english: "coat", answer: "jas", wrong: ["shirt", "broek", "hoed"] },
-    { english: "pants", answer: "broek", wrong: ["shirt", "rok", "jas"] },
-    { english: "shirt", answer: "shirt", wrong: ["broek", "jas", "jurk"] },
-    { english: "dress", answer: "jurk", wrong: ["rok", "shirt", "jas"] },
-    { english: "hand", answer: "hand", wrong: ["voet", "arm", "been"] },
-    { english: "foot", answer: "voet", wrong: ["hand", "been", "teen"] },
-    { english: "eye", answer: "oog", wrong: ["oor", "neus", "mond"] },
-    { english: "ear", answer: "oor", wrong: ["oog", "neus", "mond"] },
-    { english: "nose", answer: "neus", wrong: ["mond", "oog", "oor"] },
-    { english: "mouth", answer: "mond", wrong: ["neus", "oog", "oor"] },
-    { english: "four", answer: "vier", wrong: ["vijf", "drie", "zes"] },
-    { english: "five", answer: "vijf", wrong: ["vier", "zes", "zeven"] },
-    { english: "six", answer: "zes", wrong: ["vijf", "zeven", "acht"] },
-    { english: "seven", answer: "zeven", wrong: ["zes", "acht", "negen"] },
-    { english: "eight", answer: "acht", wrong: ["zeven", "negen", "tien"] },
-    { english: "nine", answer: "negen", wrong: ["acht", "tien", "zeven"] },
-    { english: "ten", answer: "tien", wrong: ["negen", "acht", "elf"] },
-    { english: "black", answer: "zwart", wrong: ["wit", "grijs", "bruin"] },
-    { english: "white", answer: "wit", wrong: ["zwart", "grijs", "roze"] },
-    { english: "orange", answer: "oranje", wrong: ["rood", "geel", "roze"] },
-    { english: "pink", answer: "roze", wrong: ["rood", "paars", "wit"] },
-    { english: "purple", answer: "paars", wrong: ["blauw", "roze", "groen"] },
-    { english: "brown", answer: "bruin", wrong: ["zwart", "groen", "grijs"] },
-    { english: "grey", answer: "grijs", wrong: ["zwart", "wit", "bruin"] },
-    { english: "night", answer: "nacht", wrong: ["dag", "ochtend", "avond"] },
-    { english: "week", answer: "week", wrong: ["dag", "maand", "jaar"] },
-    { english: "year", answer: "jaar", wrong: ["maand", "week", "dag"] },
-    { english: "thanks", answer: "dank je", wrong: ["alsjeblieft", "sorry", "hallo"] },
-    { english: "train", answer: "trein", wrong: ["bus", "auto", "vliegtuig"] },
+    // Niveau 1–4: eenvoudige woorden (milk, dog, …)
+    { english: "dog", answer: "hond", wrong: ["kat", "vogel", "vis"], minLevel: 1 },
+    { english: "cat", answer: "kat", wrong: ["hond", "koe", "varken"], minLevel: 1 },
+    { english: "apple", answer: "appel", wrong: ["peer", "banaan", "druif"], minLevel: 1 },
+    { english: "book", answer: "boek", wrong: ["pen", "tas", "school"], minLevel: 1 },
+    { english: "water", answer: "water", wrong: ["melk", "sap", "thee"], minLevel: 1 },
+    { english: "milk", answer: "melk", wrong: ["water", "sap", "limonade"], minLevel: 1 },
+    { english: "ball", answer: "bal", wrong: ["doos", "beker", "hoed"], minLevel: 1 },
+    { english: "tree", answer: "boom", wrong: ["huis", "auto", "zon"], minLevel: 1 },
+    { english: "sun", answer: "zon", wrong: ["maan", "ster", "regen"], minLevel: 1 },
+    { english: "house", answer: "huis", wrong: ["school", "auto", "bed"], minLevel: 1 },
+    { english: "red", answer: "rood", wrong: ["blauw", "groen", "geel"], minLevel: 1 },
+    { english: "blue", answer: "blauw", wrong: ["rood", "roze", "zwart"], minLevel: 1 },
+    { english: "one", answer: "een", wrong: ["twee", "drie", "vier"], minLevel: 1 },
+    { english: "two", answer: "twee", wrong: ["een", "vijf", "tien"], minLevel: 1 },
+    { english: "yes", answer: "ja", wrong: ["nee", "ok", "hoi"], minLevel: 1 },
+    { english: "no", answer: "nee", wrong: ["ja", "stop", "doei"], minLevel: 1 },
+    { english: "cow", answer: "koe", wrong: ["paard", "varken", "schaap"], minLevel: 1 },
+    { english: "pig", answer: "varken", wrong: ["koe", "hond", "kat"], minLevel: 1 },
+    { english: "duck", answer: "eend", wrong: ["kip", "gans", "vogel"], minLevel: 1 },
+    { english: "banana", answer: "banaan", wrong: ["appel", "peer", "druif"], minLevel: 1 },
+    { english: "bread", answer: "brood", wrong: ["taart", "rijst", "boter"], minLevel: 1 },
+    { english: "egg", answer: "ei", wrong: ["melk", "brood", "kaas"], minLevel: 1 },
+    { english: "chair", answer: "stoel", wrong: ["tafel", "bed", "bank"], minLevel: 1 },
+    { english: "table", answer: "tafel", wrong: ["stoel", "bureau", "bed"], minLevel: 1 },
+    { english: "hand", answer: "hand", wrong: ["voet", "arm", "been"], minLevel: 1 },
+    { english: "eye", answer: "oog", wrong: ["oor", "neus", "mond"], minLevel: 1 },
+    { english: "four", answer: "vier", wrong: ["vijf", "drie", "zes"], minLevel: 1 },
+    { english: "five", answer: "vijf", wrong: ["vier", "zes", "zeven"], minLevel: 1 },
+    { english: "black", answer: "zwart", wrong: ["wit", "grijs", "bruin"], minLevel: 1 },
+    { english: "white", answer: "wit", wrong: ["zwart", "grijs", "roze"], minLevel: 1 },
+    { english: "car", answer: "auto", wrong: ["bus", "fiets", "trein"], minLevel: 1 },
+    { english: "bike", answer: "fiets", wrong: ["auto", "bus", "trein"], minLevel: 1 },
+
+    // Niveau 5–9: familie, werkwoorden, school (brother, sister, …)
+    { english: "mother", answer: "moeder", wrong: ["vader", "oma", "opa"], minLevel: 5 },
+    { english: "father", answer: "vader", wrong: ["moeder", "broer", "zus"], minLevel: 5 },
+    { english: "brother", answer: "broer", wrong: ["zus", "vader", "oom"], minLevel: 5 },
+    { english: "sister", answer: "zus", wrong: ["broer", "moeder", "tante"], minLevel: 5 },
+    { english: "school", answer: "school", wrong: ["huis", "park", "winkel"], minLevel: 5 },
+    { english: "friend", answer: "vriend", wrong: ["vijand", "buur", "leraar"], minLevel: 5 },
+    { english: "big", answer: "groot", wrong: ["klein", "lang", "kort"], minLevel: 5 },
+    { english: "small", answer: "klein", wrong: ["groot", "dik", "dun"], minLevel: 5 },
+    { english: "happy", answer: "blij", wrong: ["boos", "moe", "bang"], minLevel: 5 },
+    { english: "sad", answer: "verdrietig", wrong: ["blij", "moe", "lief"], minLevel: 5 },
+    { english: "run", answer: "rennen", wrong: ["lopen", "springen", "zitten"], minLevel: 5 },
+    { english: "eat", answer: "eten", wrong: ["drinken", "slapen", "spelen"], minLevel: 5 },
+    { english: "drink", answer: "drinken", wrong: ["eten", "koken", "wassen"], minLevel: 5 },
+    { english: "play", answer: "spelen", wrong: ["werken", "leren", "slapen"], minLevel: 5 },
+    { english: "horse", answer: "paard", wrong: ["koe", "ezel", "geit"], minLevel: 5 },
+    { english: "chicken", answer: "kip", wrong: ["eend", "ei", "vogel"], minLevel: 5 },
+    { english: "bear", answer: "beer", wrong: ["leeuw", "wolf", "hond"], minLevel: 5 },
+    { english: "lion", answer: "leeuw", wrong: ["tijger", "beer", "kat"], minLevel: 5 },
+    { english: "cheese", answer: "kaas", wrong: ["melk", "boter", "ei"], minLevel: 5 },
+    { english: "juice", answer: "sap", wrong: ["melk", "water", "fris"], minLevel: 5 },
+    { english: "door", answer: "deur", wrong: ["raam", "muur", "vloer"], minLevel: 5 },
+    { english: "window", answer: "raam", wrong: ["deur", "muur", "dak"], minLevel: 5 },
+    { english: "six", answer: "zes", wrong: ["vijf", "zeven", "acht"], minLevel: 5 },
+    { english: "seven", answer: "zeven", wrong: ["zes", "acht", "negen"], minLevel: 5 },
+    { english: "eight", answer: "acht", wrong: ["zeven", "negen", "tien"], minLevel: 5 },
+    { english: "nine", answer: "negen", wrong: ["acht", "tien", "zeven"], minLevel: 5 },
+    { english: "ten", answer: "tien", wrong: ["negen", "acht", "elf"], minLevel: 5 },
+    { english: "orange", answer: "oranje", wrong: ["rood", "geel", "roze"], minLevel: 5 },
+    { english: "pink", answer: "roze", wrong: ["rood", "paars", "wit"], minLevel: 5 },
+    { english: "purple", answer: "paars", wrong: ["blauw", "roze", "groen"], minLevel: 5 },
+    { english: "night", answer: "nacht", wrong: ["dag", "ochtend", "avond"], minLevel: 5 },
+    { english: "week", answer: "week", wrong: ["dag", "maand", "jaar"], minLevel: 5 },
+    { english: "year", answer: "jaar", wrong: ["maand", "week", "dag"], minLevel: 5 },
+    { english: "thanks", answer: "dank je", wrong: ["alsjeblieft", "sorry", "hallo"], minLevel: 5 },
+    { english: "train", answer: "trein", wrong: ["bus", "auto", "vliegtuig"], minLevel: 5 },
+    { english: "grandma", answer: "oma", wrong: ["opa", "moeder", "tante"], minLevel: 5 },
+
+    // Niveau 10–14: moeilijkere woorden (hospital, …)
+    { english: "hospital", answer: "ziekenhuis", wrong: ["school", "winkel", "bibliotheek"], minLevel: 10 },
+    { english: "doctor", answer: "dokter", wrong: ["leraar", "kok", "boer"], minLevel: 10 },
+    { english: "nurse", answer: "verpleegkundige", wrong: ["dokter", "leraar", "politie"], minLevel: 10 },
+    { english: "police", answer: "politie", wrong: ["brandweer", "leger", "rechter"], minLevel: 10 },
+    { english: "firefighter", answer: "brandweerman", wrong: ["politie", "dokter", "leraar"], minLevel: 10 },
+    { english: "ambulance", answer: "ambulance", wrong: ["auto", "bus", "trein"], minLevel: 10 },
+    { english: "restaurant", answer: "restaurant", wrong: ["winkel", "school", "ziekenhuis"], minLevel: 10 },
+    { english: "supermarket", answer: "supermarkt", wrong: ["markt", "winkel", "bakkerij"], minLevel: 10 },
+    { english: "airplane", answer: "vliegtuig", wrong: ["auto", "boot", "trein"], minLevel: 10 },
+    { english: "homework", answer: "huiswerk", wrong: ["huis", "werk", "schoolwerk"], minLevel: 10 },
+    { english: "birthday", answer: "verjaardag", wrong: ["feest", "vakantie", "bruiloft"], minLevel: 10 },
+    { english: "neighbor", answer: "buurman", wrong: ["vriend", "leraar", "vijand"], minLevel: 10 },
+    { english: "morning", answer: "ochtend", wrong: ["avond", "nacht", "middag"], minLevel: 10 },
+    { english: "afternoon", answer: "middag", wrong: ["ochtend", "avond", "nacht"], minLevel: 10 },
+    { english: "tired", answer: "moe", wrong: ["blij", "boos", "bang"], minLevel: 10 },
+    { english: "angry", answer: "boos", wrong: ["blij", "moe", "bang"], minLevel: 10 },
+    { english: "elephant", answer: "olifant", wrong: ["leeuw", "tijger", "beer"], minLevel: 10 },
+    { english: "butterfly", answer: "vlinder", wrong: ["vogel", "bij", "mug"], minLevel: 10 },
+    { english: "rabbit", answer: "konijn", wrong: ["haas", "kat", "hond"], minLevel: 10 },
+    { english: "mouse", answer: "muis", wrong: ["rat", "kat", "hond"], minLevel: 10 },
+    { english: "brown", answer: "bruin", wrong: ["zwart", "groen", "grijs"], minLevel: 10 },
+    { english: "grey", answer: "grijs", wrong: ["zwart", "wit", "bruin"], minLevel: 10 },
+    { english: "pencil", answer: "potlood", wrong: ["pen", "liniaal", "boek"], minLevel: 10 },
+    { english: "coat", answer: "jas", wrong: ["shirt", "broek", "hoed"], minLevel: 10 },
+    { english: "dress", answer: "jurk", wrong: ["rok", "shirt", "jas"], minLevel: 10 },
+    { english: "mouth", answer: "mond", wrong: ["neus", "oog", "oor"], minLevel: 10 },
+    { english: "ear", answer: "oor", wrong: ["oog", "neus", "mond"], minLevel: 10 },
+    { english: "nose", answer: "neus", wrong: ["mond", "oog", "oor"], minLevel: 10 },
+    { english: "foot", answer: "voet", wrong: ["hand", "been", "teen"], minLevel: 10 },
+
+    // Niveau 15+: gevorderd vocabulaire
+    { english: "university", answer: "universiteit", wrong: ["school", "bibliotheek", "college"], minLevel: 15 },
+    { english: "library", answer: "bibliotheek", wrong: ["school", "winkel", "museum"], minLevel: 15 },
+    { english: "museum", answer: "museum", wrong: ["theater", "school", "winkel"], minLevel: 15 },
+    { english: "environment", answer: "milieu", wrong: ["natuur", "klimaat", "weer"], minLevel: 15 },
+    { english: "electricity", answer: "elektriciteit", wrong: ["water", "gas", "stroom"], minLevel: 15 },
+    { english: "temperature", answer: "temperatuur", wrong: ["weer", "warmte", "koorts"], minLevel: 15 },
+    { english: "dictionary", answer: "woordenboek", wrong: ["boek", "krant", "tijdschrift"], minLevel: 15 },
+    { english: "mathematics", answer: "wiskunde", wrong: ["natuurkunde", "geschiedenis", "aardrijkskunde"], minLevel: 15 },
+    { english: "government", answer: "regering", wrong: ["parlement", "president", "minister"], minLevel: 15 },
+    { english: "accident", answer: "ongeluk", wrong: ["feest", "reis", "wedstrijd"], minLevel: 15 },
+    { english: "medicine", answer: "medicijn", wrong: ["eten", "drank", "vitamine"], minLevel: 15 },
+    { english: "exercise", answer: "oefening", wrong: ["spel", "rust", "slaap"], minLevel: 15 },
+    { english: "adventure", answer: "avontuur", wrong: ["reis", "verhaal", "droom"], minLevel: 15 },
+    { english: "invisible", answer: "onzichtbaar", wrong: ["zichtbaar", "onbekend", "verborgen"], minLevel: 15 },
+    { english: "congratulations", answer: "gefeliciteerd", wrong: ["bedankt", "sorry", "welkom"], minLevel: 15 },
+    { english: "helicopter", answer: "helikopter", wrong: ["vliegtuig", "auto", "boot"], minLevel: 15 },
+    { english: "architect", answer: "architect", wrong: ["ingenieur", "arts", "advocaat"], minLevel: 15 },
+    { english: "journalist", answer: "journalist", wrong: ["leraar", "kok", "boer"], minLevel: 15 },
+    { english: "volcano", answer: "vulkaan", wrong: ["berg", "rivier", "oceaan"], minLevel: 15 },
+    { english: "hurricane", answer: "orkaan", wrong: ["storm", "regen", "wind"], minLevel: 15 },
   ],
 
   // Level 5-6: zin met keuze — kies het juiste Engelse woord
@@ -800,6 +852,28 @@ function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function pickPoolEntry(pool, keyFn, usedKeys) {
+  const available = usedKeys
+    ? pool.filter((entry) => !usedKeys.has(keyFn(entry)))
+    : pool;
+  const entry = pickRandom(available.length ? available : pool);
+  return { entry, sourceKey: keyFn(entry) };
+}
+
+/** Woordniveau voor mc_reverse: 1, 5, 10 of 15 */
+function getMcReverseWordTier(playerLevel) {
+  if (playerLevel >= 15) return 15;
+  if (playerLevel >= 10) return 10;
+  if (playerLevel >= 5) return 5;
+  return 1;
+}
+
+function getMcReversePoolForLevel(playerLevel) {
+  const tier = getMcReverseWordTier(playerLevel);
+  const pool = QUESTION_POOL.mc_reverse.filter((q) => q.minLevel === tier);
+  return pool.length ? pool : QUESTION_POOL.mc_reverse.filter((q) => q.minLevel === 1);
+}
+
 /** Vanaf dit level: invuloefeningen (hoogste bokser-tier) */
 const FILL_BLANK_MIN_LEVEL = Math.max(...FIGHTER_SKINS.map((s) => s.minLevel));
 
@@ -811,29 +885,51 @@ const FILL_BLANK_MIN_LEVEL = Math.max(...FIGHTER_SKINS.map((s) => s.minLevel));
  * 6 t/m hoogste-1: ook woorden schuiven
  * hoogste level (18+): vooral invullen + schuiven
  */
-function generateQuestion(playerLevel, round = 1) {
+function generateQuestionRoll(playerLevel, round = 1, usedKeys = null) {
   if (playerLevel <= 2) {
-    return buildMcEasy();
+    return buildMcEasy(usedKeys);
   }
   if (playerLevel <= 4) {
-    return Math.random() < 0.5 ? buildMcEasy() : buildMcReverse();
+    return Math.random() < 0.5 ? buildMcEasy(usedKeys) : buildMcReverse(playerLevel, usedKeys);
   }
   if (playerLevel < FILL_BLANK_MIN_LEVEL) {
     const roll = Math.random();
-    if (roll < 0.15) return buildMcEasy();
-    if (roll < 0.35) return buildMcReverse();
-    if (roll < 0.55) return buildMcSentence();
-    if (playerLevel >= 6) return buildScramble(round, playerLevel);
-    return buildMcSentence();
+    if (roll < 0.15) return buildMcEasy(usedKeys);
+    if (roll < 0.35) return buildMcReverse(playerLevel, usedKeys);
+    if (roll < 0.55) return buildMcSentence(usedKeys);
+    if (playerLevel >= 6) return buildScramble(round, playerLevel, usedKeys);
+    return buildMcSentence(usedKeys);
   }
   const roll = Math.random();
-  if (roll < 0.65) return buildFillBlank();
-  if (roll < 0.85) return buildScramble(round, playerLevel);
-  return buildMcSentence();
+  if (roll < 0.65) return buildFillBlank(usedKeys);
+  if (roll < 0.85) return buildScramble(round, playerLevel, usedKeys);
+  return buildMcSentence(usedKeys);
 }
 
-function buildMcEasy() {
-  const q = pickRandom(QUESTION_POOL.mc_easy);
+function generateQuestion(playerLevel, round = 1, usedKeys = null) {
+  if (!usedKeys) return generateQuestionRoll(playerLevel, round, null);
+
+  const maxAttempts = 60;
+  let lastQuestion = null;
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
+    lastQuestion = generateQuestionRoll(playerLevel, round, usedKeys);
+    if (!usedKeys.has(lastQuestion.sourceKey)) return lastQuestion;
+  }
+  return lastQuestion;
+}
+
+function generateUniqueQuestion(playerLevel, round, usedKeys) {
+  const question = generateQuestion(playerLevel, round, usedKeys);
+  usedKeys.add(question.sourceKey);
+  return question;
+}
+
+function buildMcEasy(usedKeys = null) {
+  const { entry: q, sourceKey } = pickPoolEntry(
+    QUESTION_POOL.mc_easy,
+    (item) => `mc_easy:${item.dutch}`,
+    usedKeys
+  );
   const options = shuffle([q.answer, ...q.wrong]);
   return {
     type: "mc",
@@ -842,11 +938,17 @@ function buildMcEasy() {
     options,
     answer: q.answer,
     hint: `Denk aan: ${q.dutch} → ?`,
+    sourceKey,
   };
 }
 
-function buildMcReverse() {
-  const q = pickRandom(QUESTION_POOL.mc_reverse);
+function buildMcReverse(playerLevel = 1, usedKeys = null) {
+  const pool = getMcReversePoolForLevel(playerLevel);
+  const { entry: q, sourceKey } = pickPoolEntry(
+    pool,
+    (item) => `mc_reverse:${item.english}`,
+    usedKeys
+  );
   const options = shuffle([q.answer, ...q.wrong]);
   return {
     type: "mc",
@@ -855,11 +957,16 @@ function buildMcReverse() {
     options,
     answer: q.answer,
     hint: `Engels: ${q.english}`,
+    sourceKey,
   };
 }
 
-function buildMcSentence() {
-  const q = pickRandom(QUESTION_POOL.mc_sentence);
+function buildMcSentence(usedKeys = null) {
+  const { entry: q, sourceKey } = pickPoolEntry(
+    QUESTION_POOL.mc_sentence,
+    (item) => `mc_sentence:${item.prompt}`,
+    usedKeys
+  );
   const options = shuffle([q.answer, ...q.wrong]);
   return {
     type: "mc",
@@ -868,6 +975,7 @@ function buildMcSentence() {
     options,
     answer: q.answer,
     hint: q.hint || "",
+    sourceKey,
   };
 }
 
@@ -883,8 +991,12 @@ function getScrambleDistractors(correctWords, count) {
   return shuffle(vocab).slice(0, count);
 }
 
-function buildScramble(round = 1, playerLevel = 1) {
-  const q = pickRandom(QUESTION_POOL.scramble);
+function buildScramble(round = 1, playerLevel = 1, usedKeys = null) {
+  const { entry: q, sourceKey } = pickPoolEntry(
+    QUESTION_POOL.scramble,
+    (item) => `scramble:${item.dutch}`,
+    usedKeys
+  );
   const correctWords = [...q.words];
   const shouldAddDistractors = round >= 13 || playerLevel >= 13;
   const extraWords = shouldAddDistractors ? getScrambleDistractors(correctWords, 2) : [];
@@ -899,11 +1011,16 @@ function buildScramble(round = 1, playerLevel = 1) {
     answer: q.words.join(" "),
     prompt: "",
     hint: "",
+    sourceKey,
   };
 }
 
-function buildFillBlank() {
-  const q = pickRandom(QUESTION_POOL.fill_blank);
+function buildFillBlank(usedKeys = null) {
+  const { entry: q, sourceKey } = pickPoolEntry(
+    QUESTION_POOL.fill_blank,
+    (item) => `fill:${item.sentence}`,
+    usedKeys
+  );
   const display = q.sentence.replace("___", '<span class="blank">???</span>');
   return {
     type: "fill",
@@ -913,6 +1030,7 @@ function buildFillBlank() {
     answer: q.answer,
     accept: q.accept.map((a) => a.toLowerCase()),
     hint: "",
+    sourceKey,
   };
 }
 

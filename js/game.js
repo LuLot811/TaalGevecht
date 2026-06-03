@@ -634,6 +634,7 @@ function startBattle() {
     correctStreak: 0,
     perfectBattle: true,
     newlyUnlockedMedals: [],
+    askedQuestionKeys: new Set(),
     history: [],
   };
 
@@ -676,9 +677,10 @@ function showNextQuestion() {
   if (!battle || inputLocked) return;
 
   stopQuestionSpeech();
-  currentQuestion = generateQuestion(
+  currentQuestion = generateUniqueQuestion(
     getEffectiveQuestionLevel(battle.playerLevel),
-    battle.round
+    battle.round,
+    battle.askedQuestionKeys
   );
   el.questionType.textContent = currentQuestion.typeLabel;
   el.questionText.innerHTML = currentQuestion.prompt;
