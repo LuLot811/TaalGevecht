@@ -12,6 +12,21 @@ const CONFIG = {
 
 const MEDALS_MIN_LEVEL = 5;
 
+const DIFFICULTY_SETTINGS = {
+  beginner: {
+    offset: 0,
+    hint: "Vragen passen bij jouw huidige level.",
+  },
+  advanced: {
+    offset: 7,
+    hint: "Je start op level 1, maar de vragen zijn als level 8.",
+  },
+  challenging: {
+    offset: 20,
+    hint: "Je start op level 1, maar de vragen zijn als level 12.",
+  },
+};
+
 const MEDALS = [
   {
     id: "streak5",
@@ -46,6 +61,12 @@ function defaultMedalsState() {
   }, {});
 }
 
+function normalizeDifficulty(value) {
+  if (value === "advanced" || value === "gevorderde") return "advanced";
+  if (value === "challenging" || value === "uitdagend") return "challenging";
+  return "beginner";
+}
+
 const defaultSave = () => ({
   xp: 0,
   wins: 0,
@@ -53,6 +74,7 @@ const defaultSave = () => ({
   answerStreak: 0,
   winStreak: 0,
   perfectWinStreak: 0,
+  difficulty: "beginner",
   medals: defaultMedalsState(),
 });
 
@@ -64,6 +86,7 @@ function loadSave() {
       return {
         ...defaultSave(),
         ...parsed,
+        difficulty: normalizeDifficulty(parsed?.difficulty),
         medals: {
           ...defaultMedalsState(),
           ...(parsed?.medals || {}),
@@ -100,6 +123,8 @@ const el = {
   unlockNext: document.getElementById("unlock-next"),
   devLevelSelect: document.getElementById("dev-level-select"),
   devResetMedalsBtn: document.getElementById("dev-reset-medals-btn"),
+  difficultySelect: document.getElementById("difficulty-select"),
+  difficultyHint: document.getElementById("difficulty-hint"),
   btnFight: document.getElementById("btn-fight"),
   battlePlayerLevel: document.getElementById("battle-player-level"),
   playerHpFill: document.getElementById("player-hp-fill"),
@@ -425,6 +450,35 @@ function getPlayerLevelInfo() {
   return getLevelFromXp(save.xp);
 }
 
+function getEffectiveQuestionLevel(playerLevel) {
+  const difficulty = normalizeDifficulty(save.difficulty);
+  const offset = DIFFICULTY_SETTINGS[difficulty].offset;
+  return Math.max(1, playerLevel + offset);
+}
+
+function syncDifficultySelect() {
+  if (!el.difficultySelect) return;
+
+  const difficulty = normalizeDifficulty(save.difficulty);
+  el.difficultySelect.value = difficulty;
+
+  if (el.difficultyHint) {
+    el.difficultyHint.textContent = DIFFICULTY_SETTINGS[difficulty].hint;
+  }
+}
+
+function initDifficultySelect() {
+  if (!el.difficultySelect) return;
+
+  syncDifficultySelect();
+
+  el.difficultySelect.addEventListener("change", () => {
+    save.difficulty = normalizeDifficulty(el.difficultySelect.value);
+    writeSave(save);
+    syncDifficultySelect();
+  });
+}
+
 function refreshUnlockTrack() {
   const { fillPercent, skins, nextHint } = getUnlockTrackData(save.xp);
 
@@ -475,6 +529,7 @@ function refreshMenu() {
   refreshUnlockTrack();
   renderMedals();
   syncDevLevelSelect();
+  syncDifficultySelect();
 }
 
 function canEarnMedals() {
@@ -621,7 +676,10 @@ function showNextQuestion() {
   if (!battle || inputLocked) return;
 
   stopQuestionSpeech();
-  currentQuestion = generateQuestion(battle.playerLevel, battle.round);
+  currentQuestion = generateQuestion(
+    getEffectiveQuestionLevel(battle.playerLevel),
+    battle.round
+  );
   el.questionType.textContent = currentQuestion.typeLabel;
   el.questionText.innerHTML = currentQuestion.prompt;
 
@@ -1215,5 +1273,6 @@ if (el.devResetMedalsBtn) {
 }
 
 // Init
+initDifficultySelect();
 initDevLevelSelect();
 refreshMenu();
