@@ -10,6 +10,8 @@ const CONFIG = {
   xpLoss: 15,
 };
 
+const MEDALS_MIN_LEVEL = 5;
+
 const MEDALS = [
   {
     id: "streak5",
@@ -475,8 +477,12 @@ function refreshMenu() {
   syncDevLevelSelect();
 }
 
+function canEarnMedals() {
+  return getPlayerLevelInfo().level >= MEDALS_MIN_LEVEL;
+}
+
 function unlockMedal(id) {
-  if (!save.medals || save.medals[id]) return false;
+  if (!canEarnMedals() || !save.medals || save.medals[id]) return false;
   save.medals[id] = true;
   if (battle && Array.isArray(battle.newlyUnlockedMedals)) {
     battle.newlyUnlockedMedals.push(id);
@@ -491,14 +497,21 @@ function getMedalById(id) {
 function renderMedals() {
   if (!el.medalsGrid) return;
 
+  const medalsUnlocked = canEarnMedals();
+
   el.medalsGrid.innerHTML = MEDALS.map((medal) => {
     const unlocked = Boolean(save.medals?.[medal.id]);
+    const status = unlocked
+      ? "Vrijgespeeld"
+      : medalsUnlocked
+        ? "Vergrendeld"
+        : `Vanaf level ${MEDALS_MIN_LEVEL}`;
     return `
       <article class="medal-card ${unlocked ? "medal-card--unlocked" : "medal-card--locked"}" aria-label="${medal.title}">
         <span class="medal-icon" aria-hidden="true">${medal.icon}</span>
         <h3 class="medal-title">${medal.title}</h3>
         <p class="medal-desc">${medal.description}</p>
-        <span class="medal-status">${unlocked ? "Vrijgespeeld" : "Vergrendeld"}</span>
+        <span class="medal-status">${status}</span>
       </article>
     `;
   }).join("");
@@ -822,9 +835,11 @@ function onCorrectHit() {
   battle.enemyHp -= battle.playerDamage;
   battle.correctHits++;
   battle.correctStreak++;
-  save.answerStreak += 1;
-  if (save.answerStreak >= 5) {
-    unlockMedal("streak5");
+  if (canEarnMedals()) {
+    save.answerStreak += 1;
+    if (save.answerStreak >= 5) {
+      unlockMedal("streak5");
+    }
   }
   el.battleMsg.textContent = getRandomPhrase(HIT_PHRASES);
   el.battleMsg.className = "battle-msg right";
@@ -863,7 +878,9 @@ function onWrongHit(historyEntry) {
   battle.playerHp -= battle.enemyDamage;
   battle.correctStreak = 0;
   battle.perfectBattle = false;
-  save.answerStreak = 0;
+  if (canEarnMedals()) {
+    save.answerStreak = 0;
+  }
   el.battleMsg.textContent = getRandomPhrase(MISS_PHRASES);
   el.battleMsg.className = "battle-msg wrong";
 
@@ -981,27 +998,32 @@ function endBattle(won) {
   const hadPerfectBattle = Boolean(battle?.perfectBattle);
 
   if (won) {
+    Sounds.playBoxingBell();
     save.xp += CONFIG.xpWin;
     save.wins += 1;
-    save.winStreak += 1;
-    if (hadPerfectBattle) {
-      save.perfectWinStreak += 1;
-      unlockMedal("perfectBattle");
-    } else {
-      save.perfectWinStreak = 0;
-    }
+    if (canEarnMedals()) {
+      save.winStreak += 1;
+      if (hadPerfectBattle) {
+        save.perfectWinStreak += 1;
+        unlockMedal("perfectBattle");
+      } else {
+        save.perfectWinStreak = 0;
+      }
 
-    if (save.winStreak >= 3) {
-      unlockMedal("winStreak3");
-    }
-    if (save.perfectWinStreak >= 3) {
-      unlockMedal("perfectWinStreak3");
+      if (save.winStreak >= 3) {
+        unlockMedal("winStreak3");
+      }
+      if (save.perfectWinStreak >= 3) {
+        unlockMedal("perfectWinStreak3");
+      }
     }
   } else {
     save.xp = Math.max(0, save.xp - CONFIG.xpLoss);
     save.losses += 1;
-    save.winStreak = 0;
-    save.perfectWinStreak = 0;
+    if (canEarnMedals()) {
+      save.winStreak = 0;
+      save.perfectWinStreak = 0;
+    }
   }
 
   writeSave(save);
