@@ -7,6 +7,8 @@ const ScrambleUI = (() => {
   let locked = false;
   let selectedChipId = null;
   let onSubmit = null;
+  let onFilled = null;
+  let lastSpokenAnswer = "";
   let bound = false;
 
   const els = {
@@ -35,6 +37,7 @@ const ScrambleUI = (() => {
       state.slots[idx] = null;
       selectedChipId = null;
       render();
+      notifyFilledSentence();
     }
   }
 
@@ -50,10 +53,26 @@ const ScrambleUI = (() => {
     state.slots[slotIndex] = chipId;
     selectedChipId = null;
     render();
+    notifyFilledSentence();
   }
 
   function allSlotsFilled() {
     return state.slots.every(Boolean);
+  }
+
+  function notifyFilledSentence() {
+    const complete = allSlotsFilled();
+    if (!complete) {
+      lastSpokenAnswer = "";
+      return;
+    }
+    if (!onFilled) return;
+
+    const answer = getAnswer();
+    if (answer === lastSpokenAnswer) return;
+
+    lastSpokenAnswer = answer;
+    onFilled(answer);
   }
 
   function getAnswer() {
@@ -207,10 +226,12 @@ const ScrambleUI = (() => {
 
   return {
     init,
-    setup(question, submitCb) {
+    setup(question, submitCb, filledCb) {
       locked = false;
       selectedChipId = null;
       onSubmit = submitCb;
+      onFilled = filledCb || null;
+      lastSpokenAnswer = "";
       const bankWords = Array.isArray(question.bankWords) && question.bankWords.length
         ? question.bankWords
         : question.words;
@@ -227,6 +248,8 @@ const ScrambleUI = (() => {
       state = null;
       selectedChipId = null;
       onSubmit = null;
+      onFilled = null;
+      lastSpokenAnswer = "";
       locked = false;
       if (els.slots) els.slots.innerHTML = "";
       if (els.bank) els.bank.innerHTML = "";

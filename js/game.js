@@ -114,6 +114,7 @@ const el = {
   battleMsg: document.getElementById("battle-msg"),
   battleTop: document.querySelector(".battle-top"),
   questionType: document.getElementById("question-type"),
+  questionSpeakBtn: document.getElementById("question-speak-btn"),
   questionPanel: document.getElementById("question-panel"),
   questionText: document.getElementById("question-text"),
   questionReviewOverlay: document.getElementById("question-review-overlay"),
@@ -147,9 +148,259 @@ let save = loadSave();
 let battle = null;
 let currentQuestion = null;
 let inputLocked = false;
+let speechQueue = [];
+const speechVoiceCache = {};
+
+const speechSupported = "speechSynthesis" in window;
 
 function isMobileViewport() {
   return window.matchMedia("(max-width: 768px)").matches;
+}
+
+function stripHtmlToText(html) {
+  const tmp = document.createElement("div");
+  tmp.innerHTML = html || "";
+  return (tmp.textContent || "").replace(/\s+/g, " ").trim();
+}
+
+function getQuotedWordSpeechLang(quotedText, promptText) {
+  if (/Wat betekent/i.test(promptText)) return "en-US";
+  if (/Engelse woord voor/i.test(promptText)) return "nl-NL";
+  if (/\b(I|She|He|We|They|The|My|It|There|Birds|Do|Can)\b/.test(quotedText)) {
+    return "en-US";
+  }
+  return "nl-NL";
+}
+
+function pushSpeechPart(segments, text, lang) {
+  const cleaned = String(text || "").replace(/\s+/g, " ").trim();
+  if (!cleaned) return;
+  const last = segments[segments.length - 1];
+  if (last && last.lang === lang) {
+    last.text = `${last.text} ${cleaned}`;
+    return;
+  }
+  segments.push({ text: cleaned, lang });
+}
+
+function parsePromptToSpeechSegments(promptText, question) {
+  const text = stripHtmlToText(promptText).replace(/\?\?\?|___/gi, " blank ");
+  if (!text) return [];
+
+  if (question.type === "fill") {
+    return [{ text, lang: "en-US" }];
+  }
+
+  const parenMatch = text.match(/^(.+?)\s*\(([^)]+)\)\s*\.?$/);
+  if (parenMatch && /\b(I|She|He|We|They|The|My|It|There|Birds)\b/i.test(parenMatch[1])) {
+    return [{ text: parenMatch[1].trim(), lang: "en-US" }];
+  }
+
+  const quotePattern = /"([^"]+)"|'([^']+)'|«([^»]+)»|“([^”]+)”/g;
+  const segments = [];
+  let lastIndex = 0;
+  let match;
+
+  while ((match = quotePattern.exec(text)) !== null) {
+    const quoted = match[1] || match[2] || match[3] || match[4] || "";
+    if (match.index > lastIndex) {
+      let before = text.slice(lastIndex, match.index).trim();
+      if (/Wat betekent$/i.test(before)) {
+        before = `${before},`;
+      }
+      pushSpeechPart(segments, before, "nl-NL");
+    }
+    pushSpeechPart(segments, quoted, getQuotedWordSpeechLang(quoted, text));
+    lastIndex = match.index + match[0].length;
+  }
+
+  if (lastIndex < text.length) {
+    pushSpeechPart(segments, text.slice(lastIndex), "nl-NL");
+  }
+
+  if (segments.length) return segments;
+
+  if (/\b(I|She|He|We|They|The|My|It)\b/.test(text)) {
+    return [{ text, lang: "en-US" }];
+  }
+
+  return [{ text, lang: "nl-NL" }];
+}
+
+function buildSentenceWithAnswer(question, answer) {
+  if (!question?.prompt) return "";
+
+  let text = stripHtmlToText(question.prompt)
+    .replace(/\s*\([^)]*\)\s*/g, " ")
+    .replace(/\?\?\?|___/g, ` ${answer} `);
+
+  return text.replace(/\s+/g, " ").trim();
+}
+
+function promptHasAnswerBlank(question) {
+  if (!question?.prompt) return false;
+  const raw = stripHtmlToText(question.prompt);
+  return /___|\?\?\?/.test(raw);
+}
+
+function isEnglishAnswerSpeech(question) {
+  if (question.type === "fill" || question.type === "scramble") return true;
+  if (question.type !== "mc") return false;
+
+  const prompt = stripHtmlToText(question.prompt);
+  if (/Wat betekent/i.test(prompt)) return false;
+  if (promptHasAnswerBlank(question)) return true;
+  if (/Engelse woord voor/i.test(prompt)) return true;
+  return false;
+}
+
+function getAnswerSpeechSegments(question, answer) {
+  if (!speechSupported || !question || !answer || !isEnglishAnswerSpeech(question)) {
+    return [];
+  }
+
+  let segments = [];
+
+  if (question.type === "scramble") {
+    segments = [{ text: String(answer), lang: "en-US" }];
+  } else if (question.type === "fill" || promptHasAnswerBlank(question)) {
+    const sentence = buildSentenceWithAnswer(question, answer);
+    if (sentence) {
+      segments = parsePromptToSpeechSegments(sentence, { ...question, type: "fill" });
+    }
+  } else {
+    segments = [{ text: String(answer), lang: "en-US" }];
+  }
+
+  return segments.filter((segment) => segment.lang === "en-US" && segment.text);
+}
+
+function speakAnsweredSentence(question, answer, onComplete) {
+  const segments = getAnswerSpeechSegments(question, answer);
+  if (!segments.length) {
+    onComplete?.();
+    return;
+  }
+
+  stopQuestionSpeech();
+  speakQueuedSegments(segments, onComplete);
+}
+
+function getQuestionSpeechSegments(question) {
+  if (!question) return [];
+
+  const segments = [];
+
+  if (question.type === "scramble" && question.translation) {
+    segments.push({ text: question.translation, lang: "nl-NL" });
+    return segments;
+  }
+
+  if (question.type === "fill") {
+    if (question.translation) {
+      segments.push({ text: question.translation, lang: "nl-NL" });
+    }
+    if (question.prompt) {
+      segments.push(...parsePromptToSpeechSegments(question.prompt, question));
+    }
+    return segments.filter((segment) => segment.text);
+  }
+
+  if (question.prompt) {
+    segments.push(...parsePromptToSpeechSegments(question.prompt, question));
+  }
+
+  return segments.filter((segment) => segment.text);
+}
+
+function pickVoiceForLang(lang) {
+  const voices = window.speechSynthesis.getVoices();
+  const prefix = lang.slice(0, 2);
+  return (
+    voices.find((voice) => voice.lang === lang) ||
+    voices.find((voice) => voice.lang.startsWith(prefix)) ||
+    null
+  );
+}
+
+function cacheSpeechVoices() {
+  speechVoiceCache["nl-NL"] = pickVoiceForLang("nl-NL");
+  speechVoiceCache["en-US"] = pickVoiceForLang("en-US");
+}
+
+function createSpeechUtterance(segment, isLast, onLastEnd) {
+  const utterance = new SpeechSynthesisUtterance(segment.text);
+  utterance.lang = segment.lang;
+  utterance.rate = 1;
+  const voice = speechVoiceCache[segment.lang] || pickVoiceForLang(segment.lang);
+  if (voice) utterance.voice = voice;
+
+  if (isLast) {
+    const finish = () => {
+      stopQuestionSpeech();
+      onLastEnd?.();
+    };
+    utterance.onend = finish;
+    utterance.onerror = finish;
+  }
+
+  return utterance;
+}
+
+function isSpeechActive() {
+  return window.speechSynthesis.speaking || window.speechSynthesis.pending;
+}
+
+function setQuestionSpeakButtonState(speaking) {
+  if (!el.questionSpeakBtn) return;
+
+  const canSpeak = speechSupported && currentQuestion && !inputLocked;
+  el.questionSpeakBtn.disabled = !canSpeak;
+  el.questionSpeakBtn.classList.toggle("question-speak-btn--speaking", speaking);
+  el.questionSpeakBtn.textContent = speaking ? "⏹ Stop" : "🔊 Voorlezen";
+  el.questionSpeakBtn.setAttribute(
+    "aria-label",
+    speaking ? "Stop met voorlezen" : "Vraag voorlezen"
+  );
+}
+
+function stopQuestionSpeech() {
+  if (!speechSupported) return;
+  window.speechSynthesis.cancel();
+  speechQueue = [];
+  setQuestionSpeakButtonState(false);
+}
+
+function speakQueuedSegments(segments, onComplete) {
+  if (!segments.length) {
+    onComplete?.();
+    return;
+  }
+
+  cacheSpeechVoices();
+  window.speechSynthesis.cancel();
+  speechQueue = segments;
+  setQuestionSpeakButtonState(true);
+
+  segments.forEach((segment, index) => {
+    const isLast = index === segments.length - 1;
+    const utterance = createSpeechUtterance(segment, isLast, isLast ? onComplete : null);
+    window.speechSynthesis.speak(utterance);
+  });
+}
+
+function speakCurrentQuestion() {
+  if (!speechSupported || !currentQuestion || inputLocked) return;
+
+  if (isSpeechActive()) {
+    stopQuestionSpeech();
+    return;
+  }
+
+  const segments = getQuestionSpeechSegments(currentQuestion);
+  if (!segments.length) return;
+
+  speakQueuedSegments(segments);
 }
 
 function setBattleHistoryCollapsed(collapsed) {
@@ -321,6 +572,7 @@ function startBattle() {
   clearBattleHistory();
   setBattleHistoryCollapsed(true);
   hideWrongAnswerOverlay();
+  stopQuestionSpeech();
   inputLocked = false;
   el.battlePlayerLevel.textContent = level;
   setBoxerElement(el.playerSprite, {
@@ -355,6 +607,7 @@ function updateHpBars() {
 function showNextQuestion() {
   if (!battle || inputLocked) return;
 
+  stopQuestionSpeech();
   currentQuestion = generateQuestion(battle.playerLevel, battle.round);
   el.questionType.textContent = currentQuestion.typeLabel;
   el.questionText.innerHTML = currentQuestion.prompt;
@@ -386,7 +639,11 @@ function showNextQuestion() {
     el.questionText.innerHTML = "";
     if (el.scramblePanel) {
       el.scramblePanel.classList.remove("hidden");
-      ScrambleUI.setup(currentQuestion, (answer) => handleAnswer(answer, null));
+      ScrambleUI.setup(
+        currentQuestion,
+        (answer) => handleAnswer(answer, null),
+        (filledSentence) => speakAnsweredSentence(currentQuestion, filledSentence)
+      );
     }
   } else {
     el.questionPanel.classList.add("question-panel--fill");
@@ -395,6 +652,8 @@ function showNextQuestion() {
     el.fillForm.classList.remove("hidden");
     setTimeout(() => el.fillInput.focus(), 100);
   }
+
+  setQuestionSpeakButtonState(false);
 }
 
 function normalizeAnswer(str) {
@@ -431,6 +690,7 @@ function lockChoices() {
 function handleAnswer(userAnswer, clickedBtn) {
   if (inputLocked || !battle || !currentQuestion) return;
   inputLocked = true;
+  stopQuestionSpeech();
   focusBattleTopOnMobile();
 
   if (currentQuestion.type === "mc") {
@@ -464,6 +724,14 @@ function handleAnswer(userAnswer, clickedBtn) {
     onCorrectHit();
   } else {
     onWrongHit(historyEntry);
+  }
+
+  const proceedToNextQuestion = () => continueToNextQuestionImmediately();
+
+  if (currentQuestion.type === "mc" || currentQuestion.type === "fill") {
+    speakAnsweredSentence(currentQuestion, userAnswer, proceedToNextQuestion);
+  } else {
+    proceedToNextQuestion();
   }
 }
 
@@ -575,7 +843,6 @@ function onCorrectHit() {
   showDamagePopup("enemy", battle.playerDamage);
 
   updateHpBars();
-  continueToNextQuestionImmediately();
 
   setTimeout(() => {
     el.enemyFighter.classList.remove("hit");
@@ -622,7 +889,6 @@ function onWrongHit(historyEntry) {
   if (battle.playerHp > 0) {
     showWrongAnswerOverlay(historyEntry);
   }
-  continueToNextQuestionImmediately();
   setTimeout(() => {
     el.playerFighter.classList.remove("hit");
   }, 900);
@@ -868,6 +1134,20 @@ function getRandomPhrase(list) {
 
 // Events
 el.btnFight.addEventListener("click", startBattle);
+
+if (el.questionSpeakBtn) {
+  if (!speechSupported) {
+    el.questionSpeakBtn.disabled = true;
+    el.questionSpeakBtn.title = "Voorlezen wordt niet ondersteund in deze browser";
+  } else {
+    el.questionSpeakBtn.addEventListener("click", speakCurrentQuestion);
+    const loadVoices = () => cacheSpeechVoices();
+    if (window.speechSynthesis.onvoiceschanged !== undefined) {
+      window.speechSynthesis.onvoiceschanged = loadVoices;
+    }
+    loadVoices();
+  }
+}
 
 el.fillForm.addEventListener("submit", (e) => {
   e.preventDefault();
