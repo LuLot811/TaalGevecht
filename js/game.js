@@ -162,6 +162,8 @@ const el = {
   scramblePanel: document.getElementById("scramble-panel"),
   resultCard: document.getElementById("result-card"),
   resultTitle: document.getElementById("result-title"),
+  resultWinner: document.getElementById("result-winner"),
+  resultWinnerFighter: document.getElementById("result-winner-fighter"),
   resultEmoji: document.getElementById("result-emoji"),
   resultText: document.getElementById("result-text"),
   resultXp: document.getElementById("result-xp"),
@@ -921,7 +923,7 @@ function onCorrectHit() {
 
   setTimeout(() => {
     el.enemyFighter.classList.remove("hit");
-  }, 700);
+  }, 1000);
 }
 
 function triggerSuccessAnimation() {
@@ -968,7 +970,7 @@ function onWrongHit(historyEntry) {
   }
   setTimeout(() => {
     el.playerFighter.classList.remove("hit");
-  }, 900);
+  }, 1200);
 }
 
 function showWrongAnswerOverlay(historyEntry) {
@@ -1116,6 +1118,8 @@ function endBattle(won) {
   const unlockedThisBattle = Array.isArray(battle?.newlyUnlockedMedals)
     ? [...battle.newlyUnlockedMedals]
     : [];
+  const winnerSkin = won ? (leveledUp ? getFighterSkin(newLevel) : battle.skin) : null;
+  renderResultWinner(won, winnerSkin);
   renderResultMedalUnlocks(unlockedThisBattle, won);
 
   battle = null;
@@ -1123,6 +1127,31 @@ function endBattle(won) {
   hideWrongAnswerOverlay();
   refreshMenu();
   showScreen("result");
+}
+
+function renderResultWinner(won, skin) {
+  if (!el.resultWinner || !el.resultWinnerFighter) return;
+
+  if (!won || !skin) {
+    el.resultWinner.hidden = true;
+    el.resultWinnerFighter.classList.remove("result-winner-fighter--celebrate");
+    el.resultWinnerFighter.innerHTML = "";
+    if (el.resultEmoji) el.resultEmoji.classList.remove("result-emoji--hidden");
+    return;
+  }
+
+  if (el.resultEmoji) el.resultEmoji.classList.add("result-emoji--hidden");
+  el.resultWinner.hidden = false;
+  el.resultWinnerFighter.classList.add("result-winner-fighter--celebrate");
+  setBoxerElement(el.resultWinnerFighter, {
+    skinId: skinIdFromFighterSkin(skin),
+    facing: "right",
+    size: "large",
+  });
+  el.resultWinnerFighter.setAttribute(
+    "aria-label",
+    `Je bokser ${skin.title || ""} viert de overwinning`
+  );
 }
 
 function renderResultMedalUnlocks(unlockedMedalIds, won) {
@@ -1260,6 +1289,7 @@ window.addEventListener("resize", () => {
 
 el.btnContinue.addEventListener("click", () => {
   el.resultCard.classList.remove("level-up-flash");
+  renderResultWinner(false, null);
   if (el.resultMedals) {
     el.resultMedals.classList.remove("result-medals--visible");
   }

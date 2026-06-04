@@ -596,11 +596,11 @@ body {
 }
 
 .battle-top .fighter.punch-right .fighter-sprite {
-  animation: punchRightBattle 0.4s ease;
+  animation: punchRightBattle 0.58s ease;
 }
 
 .battle-top .fighter.punch-left .fighter-sprite {
-  animation: punchLeftBattle 0.4s ease;
+  animation: punchLeftBattle 0.58s ease;
 }
 
 .battle-top .damage-pop {
@@ -679,11 +679,11 @@ body {
 }
 
 .fighter.punch-right .fighter-sprite {
-  animation: punchRight 0.4s ease;
+  animation: punchRight 0.58s ease;
 }
 
 .fighter.punch-left .fighter-sprite {
-  animation: punchLeft 0.4s ease;
+  animation: punchLeft 0.58s ease;
 }
 
 @keyframes punchRight {
@@ -1371,9 +1371,106 @@ body {
   color: var(--wrong);
 }
 
+.result-winner {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  min-height: 150px;
+  margin: 0.25rem 0 0.5rem;
+}
+
+.result-winner[hidden] {
+  display: none;
+}
+
+.result-winner-fighter {
+  width: 100%;
+  min-height: 140px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+
+.result-winner-fighter--celebrate .boxer {
+  animation: resultBoxerJump 0.62s ease-in-out infinite;
+  transform-origin: center bottom;
+}
+
+.result-winner-fighter--celebrate .boxer__figure {
+  animation: resultBoxerCheer 0.48s ease-in-out infinite alternate;
+  transform-origin: center bottom;
+}
+
+.result-winner-fighter--celebrate .boxer__arm--back {
+  animation: resultArmCheerBack 0.45s ease-in-out infinite alternate;
+}
+
+.result-winner-fighter--celebrate .boxer__arm--punch {
+  animation: resultArmCheerFront 0.45s ease-in-out infinite alternate-reverse;
+}
+
+.result-winner-fighter--celebrate .boxer__mouth {
+  width: 14px;
+  height: 7px;
+  border-radius: 0 0 12px 12px;
+  background: #3d2518;
+  border: none;
+  bottom: 22%;
+}
+
+.result-winner-fighter--celebrate .boxer__eye {
+  transform: scaleY(0.75);
+}
+
+@keyframes resultBoxerJump {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-26px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  70% {
+    transform: translateY(-20px);
+  }
+}
+
+@keyframes resultBoxerCheer {
+  0% {
+    transform: rotate(-2deg) scale(1);
+  }
+  100% {
+    transform: rotate(2deg) scale(1.03);
+  }
+}
+
+@keyframes resultArmCheerBack {
+  0% {
+    transform: rotate(-25deg);
+  }
+  100% {
+    transform: rotate(-72deg) translate(-4px, -10px);
+  }
+}
+
+@keyframes resultArmCheerFront {
+  0% {
+    transform: rotate(-20deg);
+  }
+  100% {
+    transform: rotate(-68deg) translate(6px, -12px);
+  }
+}
+
 .result-emoji {
   font-size: 4rem;
   margin: 0.5rem 0;
+}
+
+.result-emoji--hidden {
+  display: none;
 }
 
 .result-text {

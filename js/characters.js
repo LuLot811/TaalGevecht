@@ -209,10 +209,23 @@ function getAttackPositions(fromFighter, toFighter, arena) {
   return { startX, startY, endX, endY };
 }
 
+const ATTACK_TIMING = {
+  launchDelayMs: 110,
+  flightMs: 650,
+  projectileRemoveMs: 820,
+  impactFlashMs: 520,
+};
+
 /**
  * Lanceert een karakter-specifiek projectiel door de arena
  */
-function launchAttack({ type, fromFighter, toFighter, arena, delay = 90 }) {
+function launchAttack({
+  type,
+  fromFighter,
+  toFighter,
+  arena,
+  delay = ATTACK_TIMING.launchDelayMs,
+}) {
   if (!fromFighter || !toFighter || !arena) return;
 
   const run = () => {
@@ -235,8 +248,8 @@ function launchAttack({ type, fromFighter, toFighter, arena, delay = 90 }) {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        projectile.style.transition =
-          "transform 0.4s cubic-bezier(0.15, 0.85, 0.35, 1)";
+        const flightSec = ATTACK_TIMING.flightMs / 1000;
+        projectile.style.transition = `transform ${flightSec}s cubic-bezier(0.15, 0.85, 0.35, 1)`;
         projectile.style.transform = `translate(${endX}px, ${endY}px) translate(-50%, -50%)`;
       });
     });
@@ -244,9 +257,9 @@ function launchAttack({ type, fromFighter, toFighter, arena, delay = 90 }) {
     setTimeout(() => {
       projectile.classList.add("attack-projectile--impact");
       spawnImpactFlash(arena, endX, endY, type);
-    }, 400);
+    }, ATTACK_TIMING.flightMs);
 
-    setTimeout(() => projectile.remove(), 520);
+    setTimeout(() => projectile.remove(), ATTACK_TIMING.projectileRemoveMs);
   };
 
   if (delay > 0) {
@@ -263,5 +276,5 @@ function spawnImpactFlash(arena, x, y, type) {
   flash.style.top = `${y}px`;
   flash.setAttribute("aria-hidden", "true");
   arena.appendChild(flash);
-  setTimeout(() => flash.remove(), 350);
+  setTimeout(() => flash.remove(), ATTACK_TIMING.impactFlashMs);
 }
