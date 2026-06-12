@@ -20,63 +20,90 @@
         <p class="tagline">🥊 Leer Engels. Knock-out je tegenstander! 🥊</p>
       </header>
 
-      <div class="menu-fighter preview-fighter" id="menu-fighter"></div>
-
-      <div class="stats-card" id="menu-stats">
-        <div class="stat">
-          <span class="stat-label">Level</span>
-          <span class="stat-value" id="menu-level">1</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">XP</span>
-          <span class="stat-value" id="menu-xp">0</span>
-        </div>
-        <div class="stat">
-          <span class="stat-label">Gewonnen</span>
-          <span class="stat-value" id="menu-wins">0</span>
-        </div>
-      </div>
-
-      <section class="unlock-section" id="unlock-section" aria-label="Bokser voortgang">
-        <h2 class="unlock-heading">Ontgrendel je boksers</h2>
-        <div class="unlock-track">
-          <div class="unlock-track-line" aria-hidden="true">
-            <div class="unlock-track-fill" id="unlock-track-fill"></div>
+      <div class="menu-hero">
+        <div class="menu-fighter preview-fighter" id="menu-fighter"></div>
+        <div class="menu-stats-row" aria-label="Jouw voortgang">
+          <div class="menu-stat">
+            <span class="menu-stat-label">Level</span>
+            <span class="menu-stat-value" id="menu-level">1</span>
           </div>
-          <div class="unlock-nodes" id="unlock-nodes" role="list"></div>
+          <div class="menu-stat">
+            <span class="menu-stat-label">XP</span>
+            <span class="menu-stat-value" id="menu-xp">0</span>
+          </div>
+          <div class="menu-stat">
+            <span class="menu-stat-label">Gewonnen</span>
+            <span class="menu-stat-value" id="menu-wins">0</span>
+          </div>
         </div>
-        <p class="unlock-next" id="unlock-next"></p>
-      </section>
-
-      <div class="xp-bar-wrap">
-        <div class="xp-bar" id="menu-xp-bar" style="width: 0%"></div>
-      </div>
-      <p class="xp-hint" id="menu-xp-hint">Nog 50 XP tot level 2</p>
-
-      <div class="difficulty-field" id="difficulty-field">
-        <label for="difficulty-select" class="difficulty-label">Moeilijkheidsgraad</label>
-        <select id="difficulty-select" class="difficulty-select" aria-describedby="difficulty-hint">
-          <option value="beginner">Beginner</option>
-          <option value="advanced">Gevorderde</option>
-          <option value="challenging">Uitdagend</option>
-        </select>
-        <p class="difficulty-hint" id="difficulty-hint">Vragen passen bij jouw huidige level.</p>
       </div>
 
-      <button type="button" class="btn btn-primary btn-pulse" id="btn-fight">
-        ⚡ START GEVECHT ⚡
-      </button>
-
-      <p class="how-to">
-        Beantwoord Engelse vragen om te slaan!<br>
-        Fout? Dan word jij geraakt! 💥
-      </p>
-
-      <section class="medals-section" id="medals-section" aria-label="Medailes">
-        <h2 class="medals-heading">Jouw medailes</h2>
-        <p class="medals-intro">Medailles kun je vanaf <strong>level 5</strong> verdienen tijdens gevechten.</p>
-        <div class="medals-grid" id="medals-grid"></div>
+      <section class="play-setup play-setup--mode-only" id="play-setup" aria-label="Kies spelmodus">
+        <h2 class="play-setup-heading">Kies je modus</h2>
+        <div class="mode-field">
+          <span class="mode-label" id="mode-label">Spelmodus</span>
+          <div class="mode-options" id="mode-options" role="group" aria-labelledby="mode-label">
+            <button type="button" class="mode-option" data-mode="battle" aria-pressed="false">
+              Boksgevecht
+            </button>
+            <button type="button" class="mode-option" data-mode="trial" aria-pressed="false">
+              Time Trial
+            </button>
+          </div>
+        </div>
       </section>
+
+      <div class="mode-details" id="mode-details" hidden>
+        <p class="mode-hint" id="mode-hint">Knock-out je tegenstander met goede antwoorden.</p>
+
+        <div class="mode-details-battle" id="mode-details-battle" hidden>
+          <section class="unlock-section" id="unlock-section" aria-label="Bokser voortgang">
+            <h2 class="unlock-heading">Ontgrendel je boksers</h2>
+            <div class="unlock-track">
+              <div class="unlock-track-line" aria-hidden="true">
+                <div class="unlock-track-fill" id="unlock-track-fill"></div>
+              </div>
+              <div class="unlock-nodes" id="unlock-nodes" role="list"></div>
+            </div>
+            <p class="unlock-next" id="unlock-next"></p>
+          </section>
+
+          <div class="xp-bar-wrap">
+            <div class="xp-bar" id="menu-xp-bar" style="width: 0%"></div>
+          </div>
+          <p class="xp-hint" id="menu-xp-hint">Nog 50 XP tot level 2</p>
+        </div>
+
+        <div class="difficulty-field" id="difficulty-field">
+          <label for="difficulty-select" class="difficulty-label">Moeilijkheidsgraad</label>
+          <select id="difficulty-select" class="difficulty-select" aria-describedby="difficulty-hint">
+            <option value="beginner">Beginner</option>
+            <option value="advanced">Gevorderde</option>
+            <option value="challenging">Uitdagend</option>
+          </select>
+          <p class="difficulty-hint" id="difficulty-hint">Vragen passen bij jouw huidige level.</p>
+        </div>
+
+        <div class="time-trial-highscores-wrap" id="time-trial-highscores-wrap" hidden>
+          <h3 class="time-trial-highscores-title">Time Trial highscores</h3>
+          <div class="time-trial-highscores" id="time-trial-highscores" aria-label="Time Trial highscores"></div>
+        </div>
+
+        <button type="button" class="btn btn-primary btn-pulse" id="btn-start">
+          ⚡ START GEVECHT ⚡
+        </button>
+
+        <p class="how-to" id="how-to">
+          Beantwoord Engelse vragen om te slaan!<br>
+          Fout? Dan word jij geraakt! 💥
+        </p>
+
+        <section class="medals-section" id="medals-section" aria-label="Medailes" hidden>
+          <h2 class="medals-heading">Jouw medailes</h2>
+          <p class="medals-intro">Medailles kun je vanaf <strong>level 5</strong> verdienen tijdens gevechten.</p>
+          <div class="medals-grid" id="medals-grid"></div>
+        </section>
+      </div>
 
       <div class="dev-panel" id="dev-panel">
         <label for="dev-level-select" class="dev-label">🧪 Test: kies level</label>
@@ -91,15 +118,23 @@
       <div class="battle-top">
       <div class="battle-hud">
         <div class="hud-left">
-          <span class="hud-name">Jij — Level <span id="battle-player-level">1</span></span>
-          <div class="hp-bar hp-player">
+          <span class="hud-name hud-name--battle" id="hud-player-label">Jij — Level <span id="battle-player-level">1</span></span>
+          <div class="trial-score-wrap" id="trial-score-wrap" hidden>
+            <span class="trial-score-value" id="trial-score">0</span>
+            <span class="trial-score-label">goed</span>
+          </div>
+          <div class="hp-bar hp-player hud-hp">
             <div class="hp-fill" id="player-hp-fill"></div>
           </div>
-          <span class="hp-text" id="player-hp-text">100 / 100</span>
+          <span class="hp-text hud-hp" id="player-hp-text">100 / 100</span>
         </div>
 
         <div class="hud-center">
           <span class="round-badge" id="round-badge">Ronde 1</span>
+          <div class="trial-timer-wrap" id="trial-timer-wrap" hidden>
+            <span class="trial-timer" id="trial-timer" aria-live="polite">60</span>
+            <span class="trial-timer-unit">sec</span>
+          </div>
         </div>
 
         <div class="hud-right">

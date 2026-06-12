@@ -10,6 +10,28 @@ const CONFIG = {
   xpLoss: 15,
 };
 
+const TRIAL_DURATION_SEC = 60;
+const TRIAL_URGENT_SEC = 10;
+
+const DIFFICULTY_LABELS = {
+  beginner: "Beginner",
+  advanced: "Gevorderde",
+  challenging: "Uitdagend",
+};
+
+const PLAY_MODE_SETTINGS = {
+  battle: {
+    hint: "Knock-out je tegenstander met goede antwoorden.",
+    startLabel: "⚡ START GEVECHT ⚡",
+    howTo: "Beantwoord Engelse vragen om te slaan!<br>Fout? Dan word jij geraakt! 💥",
+  },
+  trial: {
+    hint: "60 seconden — beantwoord zoveel mogelijk vragen goed!",
+    startLabel: "⚡ START TIME TRIAL ⚡",
+    howTo: "Beantwoord zo snel mogelijk goed.<br>Foute antwoorden tellen niet mee, de klok wel! ⏱️",
+  },
+};
+
 const MEDALS_MIN_LEVEL = 5;
 
 const DIFFICULTY_SETTINGS = {
@@ -61,10 +83,20 @@ function defaultMedalsState() {
   }, {});
 }
 
+function defaultTimeTrialHighScores() {
+  return { beginner: 0, advanced: 0, challenging: 0 };
+}
+
 function normalizeDifficulty(value) {
   if (value === "advanced" || value === "gevorderde") return "advanced";
   if (value === "challenging" || value === "uitdagend") return "challenging";
   return "beginner";
+}
+
+function normalizePlayMode(value) {
+  if (value === "trial") return "trial";
+  if (value === "battle") return "battle";
+  return "";
 }
 
 const defaultSave = () => ({
@@ -75,6 +107,8 @@ const defaultSave = () => ({
   winStreak: 0,
   perfectWinStreak: 0,
   difficulty: "beginner",
+  playMode: "",
+  timeTrialHighScores: defaultTimeTrialHighScores(),
   medals: defaultMedalsState(),
 });
 
@@ -87,6 +121,11 @@ function loadSave() {
         ...defaultSave(),
         ...parsed,
         difficulty: normalizeDifficulty(parsed?.difficulty),
+        playMode: parsed?.playMode ? normalizePlayMode(parsed.playMode) : "",
+        timeTrialHighScores: {
+          ...defaultTimeTrialHighScores(),
+          ...(parsed?.timeTrialHighScores || {}),
+        },
         medals: {
           ...defaultMedalsState(),
           ...(parsed?.medals || {}),
@@ -117,15 +156,28 @@ const el = {
   menuXpBar: document.getElementById("menu-xp-bar"),
   menuXpHint: document.getElementById("menu-xp-hint"),
   menuFighter: document.getElementById("menu-fighter"),
+  medalsSection: document.getElementById("medals-section"),
   medalsGrid: document.getElementById("medals-grid"),
   unlockTrackFill: document.getElementById("unlock-track-fill"),
   unlockNodes: document.getElementById("unlock-nodes"),
   unlockNext: document.getElementById("unlock-next"),
   devLevelSelect: document.getElementById("dev-level-select"),
   devResetMedalsBtn: document.getElementById("dev-reset-medals-btn"),
+  modeOptions: document.getElementById("mode-options"),
+  modeDetails: document.getElementById("mode-details"),
+  modeDetailsBattle: document.getElementById("mode-details-battle"),
+  modeHint: document.getElementById("mode-hint"),
   difficultySelect: document.getElementById("difficulty-select"),
   difficultyHint: document.getElementById("difficulty-hint"),
-  btnFight: document.getElementById("btn-fight"),
+  timeTrialHighscoresWrap: document.getElementById("time-trial-highscores-wrap"),
+  timeTrialHighscores: document.getElementById("time-trial-highscores"),
+  btnStart: document.getElementById("btn-start"),
+  howTo: document.getElementById("how-to"),
+  hudPlayerLabel: document.getElementById("hud-player-label"),
+  trialScoreWrap: document.getElementById("trial-score-wrap"),
+  trialScore: document.getElementById("trial-score"),
+  trialTimerWrap: document.getElementById("trial-timer-wrap"),
+  trialTimer: document.getElementById("trial-timer"),
   battlePlayerLevel: document.getElementById("battle-player-level"),
   playerHpFill: document.getElementById("player-hp-fill"),
   enemyHpFill: document.getElementById("enemy-hp-fill"),
@@ -174,6 +226,7 @@ const el = {
 };
 
 let save = loadSave();
+let menuModeDetailsVisible = false;
 let battle = null;
 let currentQuestion = null;
 let inputLocked = false;
@@ -212,6 +265,12 @@ function pushSpeechPart(segments, text, lang) {
   segments.push({ text: cleaned, lang });
 }
 
+function getEnglishSentenceSpeechText(promptText) {
+  const text = stripHtmlToText(promptText).replace(/\?\?\?|___/gi, " blank ");
+  if (!text) return "";
+  return text.replace(/\s*\([^)]*\)\s*/g, " ").replace(/\s+/g, " ").trim();
+}
+
 function parsePromptToSpeechSegments(promptText, question) {
   const text = stripHtmlToText(promptText).replace(/\?\?\?|___/gi, " blank ");
   if (!text) return [];
@@ -220,8 +279,16 @@ function parsePromptToSpeechSegments(promptText, question) {
     return [{ text, lang: "en-US" }];
   }
 
+  if (question.type === "mc" && promptHasAnswerBlank(question)) {
+    const english = getEnglishSentenceSpeechText(promptText);
+    return english ? [{ text: english, lang: "en-US" }] : [];
+  }
+
   const parenMatch = text.match(/^(.+?)\s*\(([^)]+)\)\s*\.?$/);
-  if (parenMatch && /\b(I|She|He|We|They|The|My|It|There|Birds)\b/i.test(parenMatch[1])) {
+  if (
+    parenMatch &&
+    /\b(I|She|He|We|They|The|My|It|There|Birds|That|This|A|An|Do|Can)\b/i.test(parenMatch[1])
+  ) {
     return [{ text: parenMatch[1].trim(), lang: "en-US" }];
   }
 
@@ -249,7 +316,7 @@ function parsePromptToSpeechSegments(promptText, question) {
 
   if (segments.length) return segments;
 
-  if (/\b(I|She|He|We|They|The|My|It)\b/.test(text)) {
+  if (/\b(I|She|He|We|They|The|My|It|That|This|There|Birds|A|An|Do|Can)\b/i.test(text)) {
     return [{ text, lang: "en-US" }];
   }
 
@@ -259,9 +326,10 @@ function parsePromptToSpeechSegments(promptText, question) {
 function buildSentenceWithAnswer(question, answer) {
   if (!question?.prompt) return "";
 
-  let text = stripHtmlToText(question.prompt)
-    .replace(/\s*\([^)]*\)\s*/g, " ")
-    .replace(/\?\?\?|___/g, ` ${answer} `);
+  let text = getEnglishSentenceSpeechText(question.prompt).replace(
+    /\?\?\?|___|blank/gi,
+    ` ${answer} `
+  );
 
   return text.replace(/\s+/g, " ").trim();
 }
@@ -452,10 +520,151 @@ function getPlayerLevelInfo() {
   return getLevelFromXp(save.xp);
 }
 
+function isTrialMode() {
+  return battle?.mode === "trial";
+}
+
 function getEffectiveQuestionLevel(playerLevel) {
-  const difficulty = normalizeDifficulty(save.difficulty);
+  const difficulty = normalizeDifficulty(
+    isTrialMode() ? battle.trialDifficulty : save.difficulty
+  );
   const offset = DIFFICULTY_SETTINGS[difficulty].offset;
-  return Math.max(1, playerLevel + offset);
+  const baseLevel = isTrialMode() ? 1 : playerLevel;
+  return Math.max(1, baseLevel + offset);
+}
+
+function hasSelectedPlayMode() {
+  return save.playMode === "battle" || save.playMode === "trial";
+}
+
+function setPlayMode(mode) {
+  const normalized = normalizePlayMode(mode);
+  if (!normalized) return;
+  menuModeDetailsVisible = true;
+  save.playMode = normalized;
+  writeSave(save);
+  syncPlayModeUi();
+}
+
+function syncPlayModeUi() {
+  const mode = hasSelectedPlayMode() && menuModeDetailsVisible ? save.playMode : null;
+  const settings = mode ? PLAY_MODE_SETTINGS[mode] : null;
+  const showDetails = menuModeDetailsVisible && Boolean(mode);
+
+  if (el.modeOptions) {
+    el.modeOptions.querySelectorAll(".mode-option").forEach((btn) => {
+      const isActive = btn.dataset.mode === mode;
+      btn.classList.toggle("mode-option--active", isActive);
+      btn.setAttribute("aria-pressed", isActive ? "true" : "false");
+    });
+  }
+
+  if (el.modeDetails) {
+    el.modeDetails.hidden = !showDetails;
+    el.modeDetails.classList.toggle("mode-details--visible", showDetails);
+  }
+
+  if (!mode || !settings) return;
+
+  if (el.modeHint) el.modeHint.textContent = settings.hint;
+  if (el.btnStart) {
+    el.btnStart.textContent = settings.startLabel;
+    el.btnStart.classList.toggle("btn-trial", mode === "trial");
+    el.btnStart.classList.toggle("btn-primary", mode === "battle");
+  }
+  if (el.modeDetailsBattle) {
+    el.modeDetailsBattle.hidden = mode !== "battle";
+  }
+  if (el.medalsSection) {
+    el.medalsSection.hidden = mode !== "battle";
+  }
+  if (el.timeTrialHighscoresWrap) {
+    el.timeTrialHighscoresWrap.hidden = mode !== "trial";
+  }
+  if (el.howTo) el.howTo.innerHTML = settings.howTo;
+}
+
+function initModeSelect() {
+  if (!el.modeOptions) return;
+
+  menuModeDetailsVisible = save.playMode === "battle" || save.playMode === "trial";
+  syncPlayModeUi();
+
+  el.modeOptions.querySelectorAll(".mode-option").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      setPlayMode(btn.dataset.mode);
+    });
+  });
+}
+
+function renderTimeTrialHighScores() {
+  if (!el.timeTrialHighscores) return;
+  const scores = save.timeTrialHighScores || defaultTimeTrialHighScores();
+  el.timeTrialHighscores.innerHTML = Object.keys(DIFFICULTY_LABELS)
+    .map(
+      (key) => `
+      <div class="time-trial-highscore-row">
+        <span class="time-trial-highscore-label">${DIFFICULTY_LABELS[key]}</span>
+        <span class="time-trial-highscore-value">${scores[key] || 0}</span>
+      </div>
+    `
+    )
+    .join("");
+}
+
+function setBattleModeUi(trial) {
+  screens.battle.classList.toggle("screen-battle--trial", trial);
+  if (el.roundBadge) el.roundBadge.hidden = trial;
+  if (el.trialTimerWrap) el.trialTimerWrap.hidden = !trial;
+  if (el.trialScoreWrap) el.trialScoreWrap.hidden = !trial;
+  document.querySelectorAll(".hud-hp").forEach((node) => {
+    node.hidden = trial;
+  });
+  if (el.hudPlayerLabel) {
+    el.hudPlayerLabel.hidden = trial;
+  }
+  const hudRight = el.enemyName?.closest(".hud-right");
+  if (hudRight) hudRight.hidden = trial;
+}
+
+function updateTrialHud() {
+  if (!isTrialMode() || !battle) return;
+  if (el.trialScore) el.trialScore.textContent = String(battle.correctHits);
+  if (el.trialTimer) {
+    el.trialTimer.textContent = String(Math.max(0, battle.timeLeft));
+    el.trialTimer.classList.toggle(
+      "trial-timer--urgent",
+      battle.timeLeft > 0 && battle.timeLeft < TRIAL_URGENT_SEC
+    );
+  }
+}
+
+function stopTrialTimer() {
+  if (!battle?.timerId) return;
+  clearInterval(battle.timerId);
+  battle.timerId = null;
+}
+
+function startTrialTimer() {
+  stopTrialTimer();
+  battle.timerId = setInterval(() => {
+    if (!battle || battle.mode !== "trial") {
+      stopTrialTimer();
+      return;
+    }
+    battle.timeLeft -= 1;
+    updateTrialHud();
+    if (battle.timeLeft <= 0) {
+      battle.timeLeft = 0;
+      updateTrialHud();
+      stopTrialTimer();
+      if (inputLocked) {
+        battle.trialPendingEnd = true;
+      } else {
+        endTimeTrial();
+      }
+    }
+  }, 1000);
 }
 
 function syncDifficultySelect() {
@@ -518,10 +727,14 @@ function refreshMenu() {
   const skin = getFighterSkin(level);
 
   el.menuLevel.textContent = level;
-  el.menuXp.textContent = save.xp;
-  el.menuWins.textContent = save.wins;
-  el.menuXpBar.style.width = `${Math.min(100, (progress / needed) * 100)}%`;
-  el.menuXpHint.textContent = `Nog ${needed - progress} XP tot level ${level + 1}`;
+  if (el.menuXp) el.menuXp.textContent = save.xp;
+  if (el.menuWins) el.menuWins.textContent = save.wins;
+  if (el.menuXpBar) {
+    el.menuXpBar.style.width = `${Math.min(100, (progress / needed) * 100)}%`;
+  }
+  if (el.menuXpHint) {
+    el.menuXpHint.textContent = `Nog ${needed - progress} XP tot level ${level + 1}`;
+  }
   setBoxerElement(el.menuFighter, {
     skinId: skinIdFromFighterSkin(skin),
     size: "large",
@@ -532,6 +745,8 @@ function refreshMenu() {
   renderMedals();
   syncDevLevelSelect();
   syncDifficultySelect();
+  syncPlayModeUi();
+  renderTimeTrialHighScores();
 }
 
 function canEarnMedals() {
@@ -615,12 +830,30 @@ function resetMedalsForTesting() {
   refreshMenu();
 }
 
-function startBattle() {
+function startSelectedMode() {
+  if (!hasSelectedPlayMode() || !menuModeDetailsVisible) return;
+
+  const mode = save.playMode;
+  const difficulty = normalizeDifficulty(el.difficultySelect?.value || save.difficulty);
+
+  if (mode === "trial") {
+    startBattleSession({ mode: "trial", trialDifficulty: difficulty });
+    return;
+  }
+  startBattleSession({ mode: "normal" });
+}
+
+function startBattleSession({ mode, trialDifficulty = "beginner" }) {
   const { level } = getPlayerLevelInfo();
   const skin = getFighterSkin(level);
   const enemy = getEnemyForLevel(level);
 
   battle = {
+    mode,
+    trialDifficulty: mode === "trial" ? trialDifficulty : null,
+    timeLeft: TRIAL_DURATION_SEC,
+    timerId: null,
+    trialPendingEnd: false,
     playerLevel: level,
     playerHp: COMBAT.playerMaxHp,
     playerMaxHp: COMBAT.playerMaxHp,
@@ -656,7 +889,14 @@ function startBattle() {
   });
   el.enemyLabel.textContent = enemy.name;
   el.enemyName.textContent = enemy.name;
-  el.battleMsg.textContent = `Klaar? ${battle.hitsToWin} goede antwoorden = knock-out!`;
+  setBattleModeUi(mode === "trial");
+  if (mode === "trial") {
+    el.battleMsg.textContent = "Time Trial! Beantwoord zo snel en goed mogelijk!";
+    updateTrialHud();
+    startTrialTimer();
+  } else {
+    el.battleMsg.textContent = `Klaar? ${battle.hitsToWin} goede antwoorden = knock-out!`;
+  }
   el.battleMsg.className = "battle-msg";
 
   updateHpBars();
@@ -666,6 +906,11 @@ function startBattle() {
 
 function updateHpBars() {
   if (!battle) return;
+  if (isTrialMode()) {
+    updateTrialHud();
+    if (el.roundBadge) el.roundBadge.textContent = `Vraag ${battle.round}`;
+    return;
+  }
   const pPct = (battle.playerHp / battle.playerMaxHp) * 100;
   const ePct = (battle.enemyHp / battle.enemyMaxHp) * 100;
   el.playerHpFill.style.width = `${pPct}%`;
@@ -869,10 +1114,14 @@ function recordBattleHistory(entry) {
 
   const result = document.createElement("span");
   result.className = "battle-history__result";
-  const dmg = entry.correct ? battle.playerDamage : battle.enemyDamage;
-  result.textContent = entry.correct
-    ? `Raak! (−${dmg} HP tegenstander)`
-    : `Geraakt! (−${dmg} HP voor jou)`;
+  if (isTrialMode()) {
+    result.textContent = entry.correct ? "Goed!" : "Fout";
+  } else {
+    const dmg = entry.correct ? battle.playerDamage : battle.enemyDamage;
+    result.textContent = entry.correct
+      ? `Raak! (−${dmg} HP tegenstander)`
+      : `Geraakt! (−${dmg} HP voor jou)`;
+  }
 
   item.append(round, question, answers, result);
   el.battleHistoryList.appendChild(item);
@@ -894,8 +1143,30 @@ function showDamagePopup(side, amount) {
 }
 
 function onCorrectHit() {
-  battle.enemyHp -= battle.playerDamage;
   battle.correctHits++;
+  if (isTrialMode()) {
+    el.battleMsg.textContent = getRandomPhrase(HIT_PHRASES);
+    el.battleMsg.className = "battle-msg right";
+    triggerSuccessAnimation();
+    updateTrialHud();
+
+    el.playerFighter.classList.remove("punch-right");
+    void el.playerFighter.offsetWidth;
+    el.playerFighter.classList.add("punch-right");
+    launchAttack({
+      type: getPlayerAttackType(skinIdFromFighterSkin(battle.skin)),
+      fromFighter: el.playerFighter,
+      toFighter: el.enemyFighter,
+      arena: el.arena,
+    });
+    el.enemyFighter.classList.add("hit");
+    setTimeout(() => {
+      el.enemyFighter.classList.remove("hit");
+    }, 1000);
+    return;
+  }
+
+  battle.enemyHp -= battle.playerDamage;
   battle.correctStreak++;
   if (canEarnMedals()) {
     save.answerStreak += 1;
@@ -937,6 +1208,12 @@ function triggerSuccessAnimation() {
 }
 
 function onWrongHit(historyEntry) {
+  if (isTrialMode()) {
+    el.battleMsg.textContent = `Fout! Het juiste antwoord was: ${currentQuestion.answer}`;
+    el.battleMsg.className = "battle-msg wrong";
+    return;
+  }
+
   battle.playerHp -= battle.enemyDamage;
   battle.correctStreak = 0;
   battle.perfectBattle = false;
@@ -1032,6 +1309,7 @@ function getOverlayCorrectionHtml(question) {
 }
 
 function checkBattleEnd() {
+  if (isTrialMode()) return false;
   if (battle.correctHits >= battle.hitsToWin) {
     endBattle(true);
     return true;
@@ -1049,13 +1327,62 @@ function checkBattleEnd() {
 
 function continueToNextQuestionImmediately() {
   if (!battle) return;
+  if (battle.trialPendingEnd) {
+    endTimeTrial();
+    return;
+  }
   if (checkBattleEnd()) return;
   battle.round++;
   inputLocked = false;
   showNextQuestion();
 }
 
+function endTimeTrial() {
+  if (!battle || battle.mode !== "trial") return;
+
+  stopTrialTimer();
+  stopQuestionSpeech();
+  setBattleModeUi(false);
+
+  const difficulty = normalizeDifficulty(battle.trialDifficulty);
+  const score = battle.correctHits;
+  const previousBest = save.timeTrialHighScores?.[difficulty] || 0;
+  const isNewRecord = score > previousBest;
+
+  if (isNewRecord) {
+    if (!save.timeTrialHighScores) save.timeTrialHighScores = defaultTimeTrialHighScores();
+    save.timeTrialHighScores[difficulty] = score;
+    writeSave(save);
+  }
+
+  const skin = battle.skin;
+  el.resultCard.className = `result-card win${isNewRecord ? " level-up-flash" : ""}`;
+  el.resultTitle.textContent = isNewRecord ? "NIEUW RECORD!" : "TIME TRIAL KLAAR!";
+  el.resultEmoji.textContent = isNewRecord ? "🏆" : "⏱️";
+  el.resultText.textContent = isNewRecord
+    ? `Geweldig! Je scoorde ${score} goede antwoorden op ${DIFFICULTY_LABELS[difficulty]}.`
+    : `Je scoorde ${score} goede antwoorden op ${DIFFICULTY_LABELS[difficulty]}. Highscore: ${Math.max(previousBest, score)}.`;
+  el.resultXp.textContent = `Highscore ${DIFFICULTY_LABELS[difficulty]}: ${Math.max(previousBest, score)}`;
+
+  renderResultWinner(isNewRecord, skin);
+  renderResultMedalUnlocks([], false);
+  if (isNewRecord) triggerResultConfetti();
+
+  battle = null;
+  currentQuestion = null;
+  hideWrongAnswerOverlay();
+  refreshMenu();
+  showScreen("result");
+}
+
 function endBattle(won) {
+  if (battle?.mode === "trial") {
+    endTimeTrial();
+    return;
+  }
+
+  stopTrialTimer();
+  setBattleModeUi(false);
   const oldLevel = getPlayerLevelInfo().level;
   const hadPerfectBattle = Boolean(battle?.perfectBattle);
 
@@ -1244,7 +1571,9 @@ function getRandomPhrase(list) {
 }
 
 // Events
-el.btnFight.addEventListener("click", startBattle);
+if (el.btnStart) {
+  el.btnStart.addEventListener("click", startSelectedMode);
+}
 
 if (el.questionSpeakBtn) {
   if (!speechSupported) {
@@ -1288,6 +1617,8 @@ window.addEventListener("resize", () => {
 });
 
 el.btnContinue.addEventListener("click", () => {
+  menuModeDetailsVisible = true;
+  setBattleModeUi(false);
   el.resultCard.classList.remove("level-up-flash");
   renderResultWinner(false, null);
   if (el.resultMedals) {
@@ -1305,6 +1636,7 @@ if (el.devResetMedalsBtn) {
 }
 
 // Init
+initModeSelect();
 initDifficultySelect();
 initDevLevelSelect();
 refreshMenu();
