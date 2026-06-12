@@ -13,6 +13,11 @@
   --hp-enemy: #ff2d95;
   --font-display: "Bangers", cursive;
   --font-body: "Nunito", sans-serif;
+  --app-max-width: 520px;
+  --content-max-width: 360px;
+  --feature-max-width: 320px;
+  --hero-max-width: 320px;
+  --narrow-max-width: 300px;
 }
 
 *,
@@ -47,7 +52,7 @@ body {
 #app {
   position: relative;
   z-index: 1;
-  max-width: 520px;
+  max-width: var(--app-max-width);
   margin: 0 auto;
   padding: 1rem;
   min-height: 100dvh;
@@ -96,6 +101,30 @@ body {
   margin-top: 0.5rem;
   color: var(--neon-cyan);
   font-weight: 700;
+}
+
+#screen-menu {
+  gap: 0.5rem;
+}
+
+#screen-menu .logo-block {
+  margin-top: 0.15rem;
+  margin-bottom: 0;
+}
+
+#screen-menu .tagline {
+  margin-top: 0.25rem;
+}
+
+#screen-menu .menu-hero {
+  margin-top: 0;
+  gap: 0.4rem;
+}
+
+#screen-menu .menu-fighter {
+  min-height: 0;
+  height: auto;
+  align-items: center;
 }
 
 /* Stats */
@@ -310,7 +339,7 @@ body {
   color: #1a0a2e;
   box-shadow: 0 6px 0 #c47a00, 0 0 20px rgba(255, 230, 0, 0.4);
   width: 100%;
-  max-width: 320px;
+  max-width: var(--hero-max-width);
 }
 
 .btn-pulse {
@@ -330,7 +359,7 @@ body {
 /* Menu hero: bokser + level */
 .menu-hero {
   width: 100%;
-  max-width: 320px;
+  max-width: var(--feature-max-width);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -374,7 +403,7 @@ body {
 /* Play setup (modus + moeilijkheid) */
 .play-setup {
   width: 100%;
-  max-width: 360px;
+  max-width: var(--content-max-width);
   margin-top: 0.35rem;
   padding: 0.85rem 0.75rem;
   border: 2px solid var(--neon-yellow);
@@ -388,7 +417,7 @@ body {
 
 .mode-details {
   width: 100%;
-  max-width: 360px;
+  max-width: var(--content-max-width);
   margin-top: 0.55rem;
   padding: 0.85rem 0.75rem;
   border: 2px solid var(--neon-pink);
@@ -665,7 +694,7 @@ body {
   font-size: 0.9rem;
   line-height: 1.5;
   opacity: 0.9;
-  max-width: 300px;
+  max-width: var(--narrow-max-width);
 }
 
 /* Medailles */
@@ -757,7 +786,7 @@ body {
 /* Moeilijkheidsgraad */
 .difficulty-field {
   width: 100%;
-  max-width: 320px;
+  max-width: var(--hero-max-width);
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
@@ -804,7 +833,7 @@ body {
 /* Test-panel */
 .dev-panel {
   width: 100%;
-  max-width: 280px;
+  max-width: var(--hero-max-width);
   margin-top: 0.75rem;
   display: flex;
   flex-direction: column;
@@ -1685,7 +1714,7 @@ body {
   border-radius: 20px;
   padding: 2rem 1.5rem;
   width: 100%;
-  max-width: 360px;
+  max-width: var(--content-max-width);
   position: relative;
   overflow: hidden;
 }
@@ -1966,8 +1995,15 @@ body {
 }
 
 @media (max-width: 768px) {
+  :root {
+    --app-max-width: 100%;
+    --content-max-width: 360px;
+    --feature-max-width: 320px;
+    --hero-max-width: 320px;
+    --narrow-max-width: 300px;
+  }
+
   #app {
-    max-width: 100%;
     padding: 0.85rem 0.75rem calc(0.85rem + env(safe-area-inset-bottom));
   }
 
@@ -2105,5 +2141,56 @@ body {
 
   .question-type {
     font-size: 0.7rem;
+  }
+}
+
+/* Tablet & desktop — stacked layout, wider character / unlock / medals */
+@media (min-width: 769px) {
+  :root {
+    --app-max-width: 640px;
+    --feature-max-width: 580px;
+    --content-max-width: 360px;
+  }
+
+  #app {
+    padding: 1.25rem 1.5rem 2rem;
+  }
+
+  .menu-hero {
+    max-width: var(--feature-max-width);
+  }
+
+  .mode-details {
+    max-width: var(--feature-max-width);
+  }
+
+  .mode-details .mode-hint,
+  .mode-details .difficulty-field,
+  .mode-details .time-trial-highscores-wrap,
+  .mode-details .btn-primary,
+  .mode-details .btn-trial,
+  .mode-details .how-to,
+  .mode-details-battle .xp-bar-wrap,
+  .mode-details-battle .xp-hint {
+    max-width: var(--content-max-width);
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+  }
+
+  .unlock-section,
+  .medals-section {
+    width: 100%;
+  }
+
+  .medals-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1024px) {
+  :root {
+    --app-max-width: 760px;
+    --feature-max-width: 700px;
   }
 }
